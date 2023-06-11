@@ -1,33 +1,51 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useEffect, useState } from 'react';
+import { BrowserRouter, Outlet, Route, Routes } from 'react-router-dom';
+import TopBar from './components/topBar';
+import PageList from './components/pageList';
+import LoginForm from './components/loginForm';
+import PageEditorForm from './components/pageEditorForm';
+import PageDisplay from './components/pageDisplay';
+import './App.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import NotFoundPage from './components/404';
+import { Container } from 'react-bootstrap';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [user, changeUser] = useState(undefined);
+  const [websiteName, updateWebsiteName] = useState("");
+
+  useEffect(() => {
+    fetch('http://localhost:4452/api/site/name').then((res) => res.json()).then((res) => updateWebsiteName(res.value));
+    const interval = setTimeout(() => fetch('http://localhost:4452/api/site/name').then((res) => res.json()).then((res) => updateWebsiteName(res.value)), 60* 1000);
+    
+    return () => clearInterval(interval);
+  }, [websiteName]);
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <BrowserRouter>
+        <Routes>
+          <Route element={<><TopBar user={user} websiteName={websiteName} updateUser={changeUser}></TopBar><Container fluid><Outlet></Outlet></Container></>}>
+            <Route element={<><PageList user={user}></PageList></>} path='/'>
+
+            </Route>
+            <Route element={<><LoginForm updateUser={changeUser} /></>} path='/login'>
+
+            </Route>
+            <Route element={<><PageDisplay /></>} path='/page/:id'>
+              <Route element={<><PageEditorForm /></>} path='edit'>
+
+              </Route>
+            </Route>
+            <Route element={<><PageEditorForm /></>} path='/page/new'>
+
+            </Route>
+            <Route element={<><NotFoundPage /></>} path='*'>
+
+            </Route>
+          </Route>
+        </Routes>
+      </BrowserRouter>
     </>
   )
 }
