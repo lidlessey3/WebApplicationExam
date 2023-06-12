@@ -26,7 +26,7 @@ passport.use(new strategy(async (username, password, cb) => {
     const user = await authentication.authenticateUser(username, password);
     if (user)
         return cb(null, user);
-    return cb(null, false, 'Incorrect username or password.');
+    return cb(null, false, JSON.stringify({error: 'Incorrect username or password.'}));
 }));
 
 passport.serializeUser(function (user, cb) {
