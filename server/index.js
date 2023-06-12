@@ -108,8 +108,13 @@ returns a list of all published pages with the following info:
 app.get('/api/pages', (req, res) => {
     let elaborate = async (value) => {
         res.status(200).json(Array(value).map((elem) => {
-            title: elem.title;
-            author: elem.author; publicationDate: elem.publicationDate; id: elem.id
+            let result = {
+                title: elem.title,
+                author: { id: elem.authorID, name: elem.username }, publicationDate: elem.publicationDate, id: elem.id
+            }
+            if (elem.creationDate !== undefined)
+                result.creationDate = elem.creationDate;
+            return result;
         }));
     };
     if (req.isAuthenticated())

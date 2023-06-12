@@ -99,7 +99,7 @@ exports.getPageContent = function getPageContent(id) { // returns the content of
 
 exports.getPublishedPages = function getPublishedPages() {
     return new Promise((resolve, reject) => {
-        const sql = "SELECT * FROM pages WHERE publicationDate <= ?;";
+        const sql = "SELECT pages.id, publicationDate, title, username, users.id AS authorID FROM pages, users WHERE pages.author = users.id AND publicationDate <= ?;";
         db.all(sql, [dayjs().toISOString()], (err, rows) => {
             if (err)
                 reject(err);
@@ -111,7 +111,7 @@ exports.getPublishedPages = function getPublishedPages() {
 
 exports.getAllPages = function getAllPages() {
     return new Promise((resolve, reject) => {
-        const sql = "SELECT * FROM pages;";
+        const sql = "SELECT pages.id, publicationDate, title, creationDate, username, users.id FROM pages, users WHERE users.id = pages.author;";
         db.all(sql, [], (err, rows) => {
             if (err)
                 reject(err);
