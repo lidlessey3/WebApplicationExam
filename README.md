@@ -1,5 +1,5 @@
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-24ddc0f5d75046c5622901739e7c5dd533143b0c8e959d652212380cedb1ea36.svg)](https://classroom.github.com/a/8AapHqUJ)
-# Exam #N: "Exam Title"
+# Exam #1: "CMSmall"
 ## Student: s314895 Pavarino Leonardo 
 
 ## React Client Application Routes
@@ -110,6 +110,23 @@
   ```
 - DELETE `/api/pages/:id`
   - parameters: id of the page to delete
+- POST `/api/pages/new`
+  - creates a new page
+  - request body:
+  ```
+  {
+    title: the title,
+    author: the author of the page (must be the same as the logged in user, unless the user is an admin),
+    publicationDate: the publication date,
+    content: [
+      {
+        elementType,
+        elementData
+      },
+      ...
+    ]
+  }
+  ```
 - GET `/api/users/list`
   - response:
   ```
