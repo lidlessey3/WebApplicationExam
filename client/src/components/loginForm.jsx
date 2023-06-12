@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { Form, Button, Row } from "react-bootstrap";
+import { Form, Button, Row, Collapse } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import "./../style/loginForm.css"
 
 function LoginForm(props) {
     const [email, setMail] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
     const navigate = useNavigate();
 
 
@@ -21,11 +22,19 @@ function LoginForm(props) {
                         credentials: 'include',
                         body: JSON.stringify({ username: email, password: password }),
                     }).then((response) => response.json()).then((json) => {
-                        props.updateUser(json);
-                        console.log(json);
-                        navigate('/');
+                        if (json.error === undefined) {
+                            props.updateUser(json);
+                            console.log(json);
+                            navigate('/');
+                        }
+                        else {
+                            setError(json.error);
+                        }
                     });
                 }}>
+                    <Collapse in={error !== ''}>
+                        <div className="card bg-danger text-light" id="loginError">{error}</div>
+                    </Collapse>
                     <Form>
                         <Form.Control type='email' placeholder="email" value={email} onChange={(x) => setMail(x.target.value)} required />
                         <Form.Control type="password" placeholder="password" value={password} onChange={(x) => setPassword(x.target.value)} required />

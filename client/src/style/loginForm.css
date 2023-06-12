@@ -13,3 +13,7 @@
 #loginForm form * {
     margin: 0.25rem;
 }
+
+#loginError {
+    margin: 0.5rem;
+}
