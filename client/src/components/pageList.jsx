@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Row, Col, Table } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import dayjs from 'dayjs';
+import UserMenu from "./userMenu";
 import './../style/pageList.css';
 
 function author(id, username) {
@@ -24,6 +25,7 @@ function PageList(props) {
 
     useEffect(() => {
         fetch('http://localhost:4452/api/pages').then((result) => result.json()).then((json) => {
+            console.log(json);
             updatePages(json.map((elem) => {
                 return new page(elem.id, elem.publicationDate, elem.creationDate, elem.title, new author(elem.author.id, elem.author.name));
             }));
@@ -36,7 +38,12 @@ function PageList(props) {
         <>
             <Row className='vh-100' id='pageList'>
                 {props.user === undefined ? <Col md={12} xl={12} id='pageTable'><PageTable pages={pages}></PageTable></Col> :
-                    <><Col md={4} xl={3}></Col><Col md={8} xl={9}><PageTable user={props.user} pages={pages.filter((elem) => {
+                    <><Col md={4} xl={3}><UserMenu user={props.user} pages={pages.filter((elem) => {
+                        if (elem.publicationDate === undefined)
+                            return true;
+                        else
+                            return elem.publicationDate.isAfter(dayjs());
+                    }).sort((a,b) => a.creationDate.isAfter(b.creationDate) ? 1 : -1)}></UserMenu></Col><Col md={8} xl={9}><PageTable user={props.user} pages={pages.filter((elem) => {
                         if (elem.publicationDate === undefined)
                             return false;
                         else

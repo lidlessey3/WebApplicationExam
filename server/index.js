@@ -107,7 +107,8 @@ returns a list of all published pages with the following info:
 */
 app.get('/api/pages', (req, res) => {
     let elaborate = async (value) => {
-        res.status(200).json(Array(value).map((elem) => {
+        console.log(value);
+        res.status(200).json(value.map((elem) => {
             let result = {
                 title: elem.title,
                 author: { id: elem.authorID, name: elem.username }, publicationDate: elem.publicationDate, id: elem.id
