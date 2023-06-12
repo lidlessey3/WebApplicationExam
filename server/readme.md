@@ -56,7 +56,6 @@ Post format:
         title,
         author,
         publicationDate,
-        id,
         content: [
             {
                 elementType,
