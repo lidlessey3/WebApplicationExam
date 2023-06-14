@@ -228,3 +228,4 @@ app.get("/api/site/name", (req, res) => {
 });
 
 app.listen(4452);
+console.log("Listening on port 4452");
