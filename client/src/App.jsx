@@ -37,7 +37,7 @@ function App() {
 
               </Route>
             </Route>
-            <Route element={<><PageEditorForm /></>} path='/page/new'>
+            <Route element={<><PageEditorForm user={user} /></>} path='/page/new'>
 
             </Route>
             <Route element={<><NotFoundPage /></>} path='*'>
