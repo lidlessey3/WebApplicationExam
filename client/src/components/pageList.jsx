@@ -36,7 +36,7 @@ function PageList(props) {
 
     return (
         <>
-            <Row className='vh-100' id='pageList'>
+            <Row className='vh-100 underNav' id='pageList'>
                 {props.user === undefined ? <Col md={12} xl={12} id='pageTable'><PageTable pages={pages}></PageTable></Col> :
                     <><Col md={4} xl={3}><UserMenu user={props.user} pages={pages.filter((elem) => {
                         if (elem.publicationDate === undefined)
