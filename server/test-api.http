@@ -1,0 +1,19 @@
+# This file could be used for testing the API with Visual Studio Code
+
+## Execute Log In
+POST http://localhost:4452/api/session HTTP/1.1
+content-type: application/json
+
+{
+    "username": "virgilio@rome.it",
+    "password": "Eneide"
+}
+###
+
+## Checking if user is still logged-in.
+GET http://localhost:4452/api/session/current HTTP/1.1
+###
+
+## Execute Log Out.
+DELETE http://localhost:4452/api/session/current HTTP/1.1
+###

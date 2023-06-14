@@ -26,7 +26,7 @@ passport.use(new strategy(async (username, password, cb) => {
     const user = await authentication.authenticateUser(username, password);
     if (user)
         return cb(null, user);
-    return cb(null, false, JSON.stringify({error: 'Incorrect username or password.'}));
+    return cb(null, false, 'Incorrect username or password.');
 }));
 
 passport.serializeUser(function (user, cb) {
@@ -34,6 +34,7 @@ passport.serializeUser(function (user, cb) {
 });
 
 passport.deserializeUser(function (user, cb) {
+    console.log('deserializing');
     return cb(null, user);
 });
 
@@ -61,7 +62,7 @@ app.post('/api/session', function (req, res, next) {
             return next(err);
         if (!user) {
             // display wrong login messages
-            return res.status(401).send(info);
+            return res.status(401).json({error: info });
         }
         // success, perform the login
         req.login(user, (err) => {
@@ -69,9 +70,14 @@ app.post('/api/session', function (req, res, next) {
                 return next(err);
 
             // req.user contains the authenticated user, we send all the user info back
+            console.log(req.session);
             return res.status(201).json(req.user);
         });
     })(req, res, next);
+});
+
+app.get('/api/session/current', (req, res, next) => {
+    res.json(req.user);
 });
 /*
 ## /api/session/current

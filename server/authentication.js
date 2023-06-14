@@ -11,10 +11,8 @@ exports.authenticateUser = (email, password) => {
             if (result === undefined)
                 resolve(false);
             else {
-                const user = { id: result.id, username: result.mail, name: result.username, admin: result.admin };
+                const user = { id: result.id, username: result.email, name: result.username, admin: result.admin };
                 crypto.scrypt(password, Buffer.from(result.salt, 'hex'), 32, (err, hashedPassword) => {
-                    console.log(hashedPassword.toString('hex'));
-                    console.log(result.password);
                     if (err)
                         reject(err);
                     if (crypto.timingSafeEqual(Buffer.from(result.password, 'hex'), hashedPassword))
