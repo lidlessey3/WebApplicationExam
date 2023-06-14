@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Row, Col } from 'react-bootstrap';
+import { useEffect, useState } from "react";
+import { Row, Col, Form } from 'react-bootstrap';
 import { useNavigate } from "react-router-dom";
 import { DragDropContext } from 'react-beautiful-dnd';
 import './../style/pageEditorForm.css'
@@ -10,7 +10,18 @@ function PageEditorForm(props) {
     const [title, setTitle] = useState('');
     const [author, setAuthor] = useState(props.user);
     const [components, setComponents] = useState([]);
+    const [users, setUsers] = useState([]);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        console.log(props.user);
+        if (props.user === undefined)
+            navigate('/');
+        else if (props.user.admin !== 1)
+            return;
+        else
+            fetch("http://localhost:4452/api/users/list").then((response) => response.json()).then((response) => setUsers(response));
+    }, [props.user])
 
     return (
         <>
@@ -20,11 +31,20 @@ function PageEditorForm(props) {
                         navigate(-1);
                     }}></i>
                 </Col>
-                <DragDropContext>
+                {props.user ? <DragDropContext>
                     <Col md={9} id="EditContent">
-
+                        <Row>
+                            <div className="w-100 bg-light">
+                                <Form>
+                                    Title:<Form.Control type="text" required placeholder="Lorem Ipsum" value={title} onChange={(event) => setTitle(event.target.value)}></Form.Control><br />
+                                    Author: {props.user.admin === 1 ? <Form.Select value={author} onChange={(event) => setAuthor(event.target.value)}>
+                                        {users.map((user) => <option value={user}>{user.name}</option>)}
+                                    </Form.Select> : props.user.name}
+                                </Form>
+                            </div>
+                        </Row>
                     </Col>
-                </DragDropContext>
+                </DragDropContext> : <></>}
             </Row>
         </>
     );
