@@ -17,3 +17,6 @@ GET http://localhost:4452/api/session/current HTTP/1.1
 ## Execute Log Out.
 DELETE http://localhost:4452/api/session/current HTTP/1.1
 ###
+
+### Check that only admin can access the list of users
+GET http://localhost:4452/api/users/list HTTP/1.1

@@ -24,7 +24,7 @@ function PageList(props) {
     const [pages, updatePages] = useState([]);
 
     useEffect(() => {
-        fetch('http://localhost:4452/api/pages').then((result) => result.json()).then((json) => {
+        fetch('http://localhost:4452/api/pages', {credentials: "include"}).then((result) => result.json()).then((json) => {
             console.log(json);
             updatePages(json.map((elem) => {
                 return new page(elem.id, elem.publicationDate, elem.creationDate, elem.title, new author(elem.author.id, elem.author.name));

@@ -20,7 +20,11 @@ function PageEditorForm(props) {
         else if (props.user.admin !== 1)
             return;
         else
-            fetch("http://localhost:4452/api/users/list").then((response) => response.json()).then((response) => setUsers(response));
+            fetch("http://localhost:4452/api/users/list", { credentials: "include" }).then((response) => response.json()).then((response) => {
+                console.log('list of users');
+                console.log(response);
+                setUsers(response);
+            });
     }, [props.user])
 
     return (
@@ -38,7 +42,7 @@ function PageEditorForm(props) {
                                 <Form>
                                     Title:<Form.Control type="text" required placeholder="Lorem Ipsum" value={title} onChange={(event) => setTitle(event.target.value)}></Form.Control><br />
                                     Author: {props.user.admin === 1 ? <Form.Select value={author} onChange={(event) => setAuthor(event.target.value)}>
-                                        {users.map((user) => <option value={user}>{user.name}</option>)}
+                                        {users.map((user) => <option key={user.id} value={user}>{user.name}</option>)}
                                     </Form.Select> : props.user.name}
                                 </Form>
                             </div>

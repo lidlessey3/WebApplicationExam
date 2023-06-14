@@ -18,7 +18,10 @@ app.use(morgan('dev'));
 const corsOptions = {
     origin: 'http://localhost:5173',
     optionsSuccessStatus: 200,
-    credentials: true
+    credentials: true,
+    cookie: {
+        sameSite: 'none'
+    }
 }
 app.use(cors(corsOptions));
 
@@ -221,6 +224,16 @@ Post format:
     password
 }
 ```
+*/
+app.get('/api/users/list', (req, res) => {
+    // check if the user is an admin
+    if (req.user === undefined || req.user.admin !== 1)
+        return res.status(401).json({ error: "Only admins can access this" });
+    db.getAllUsers().then((result) => {
+        return res.status(200).json(result);
+    });
+})
+/*
 
 ## /api/site/name
 ### GET
