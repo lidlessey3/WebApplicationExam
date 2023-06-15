@@ -16,7 +16,7 @@ function TopBar(props) {
                         {props.user === undefined ? <Nav.Item><Link to='/login'>
                             <i className='icon-size text-light'>Log In</i>
                     </Link></Nav.Item> : <><Nav.Item onClick={(event) => {
-                            fetch('http://localhost:4452/api/session/current', { method: 'DELETE' }).then((result) => props.updateUser(undefined));
+                            fetch('http://localhost:4452/api/session/current', { method: 'DELETE', credentials: 'include' }).then((result) => props.updateUser(undefined));
                         }}><i className='icon-size text-light'>{ props.user.name }</i></Nav.Item></>}
                 </Nav>
             </Navbar>

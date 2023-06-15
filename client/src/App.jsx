@@ -21,6 +21,13 @@ function App() {
     return () => clearInterval(interval);
   }, [websiteName]);
 
+  useEffect(() => {
+    fetch('http://localhost:4452/api/session/current', { credentials: "include" }).then((answer) => answer.json()).then((answer) => {
+      if (answer.error !== undefined);
+      changeUser(answer);
+    });
+  });
+
   return (
     <>
       <BrowserRouter>
