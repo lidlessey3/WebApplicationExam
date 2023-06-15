@@ -32,7 +32,7 @@ function App() {
     <>
       <BrowserRouter>
         <Routes>
-          <Route element={<><TopBar user={user} websiteName={websiteName} updateUser={changeUser}></TopBar><Container fluid><Outlet></Outlet></Container></>}>
+          <Route element={<><TopBar user={user} websiteName={websiteName} updateUser={changeUser}></TopBar><Container fluid className='d-flex align-items-stretch'><Outlet></Outlet></Container></>}>
             <Route element={<><PageList user={user}></PageList></>} path='/'>
 
             </Route>

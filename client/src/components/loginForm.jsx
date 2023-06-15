@@ -12,7 +12,7 @@ function LoginForm(props) {
 
     return (
         <>
-            <Row className="justify-content-center align-items-center">
+            <Row className="w-100 justify-content-center align-items-center">
                 <div className="card bg-light" id="loginForm" onSubmit={(event) => {
                     event.preventDefault();
                     console.log("Sending login request");
