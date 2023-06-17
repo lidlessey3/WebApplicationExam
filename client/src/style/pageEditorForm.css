@@ -1,3 +1,32 @@
 #backArrow {
     font-size: xx-large;
 }
+
+#title-tile {
+    padding: 0.5rem;
+}
+
+#dropArea {
+    min-height: 85vh;
+    background-color: #e9e9e978;
+    margin-top: 5px;
+    border: lightgray;
+    border-width: 3px;
+    border-style: dashed;
+    border-radius: 10px;
+    z-index: 0;
+}
+
+#backgroundText {
+    z-index: -2;
+    margin: auto;
+}
+
+#backgroundText p {
+    color: gray;
+    font-size: xx-large;
+}
+
+#titleForm {
+    height: fit-content;
+}

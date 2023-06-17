@@ -23,10 +23,10 @@ function App() {
 
   useEffect(() => {
     fetch('http://localhost:4452/api/session/current', { credentials: "include" }).then((answer) => answer.json()).then((answer) => {
-      if (answer.error !== undefined);
-      changeUser(answer);
+      if (answer.error !== undefined && answer !== user) 
+        changeUser(answer);
     });
-  });
+  }, []);
 
   return (
     <>
