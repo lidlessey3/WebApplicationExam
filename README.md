@@ -167,4 +167,4 @@
 ## Users Credentials
 
 - virgilio@rome.it, Eneide is an admin
-- username, password (plus any other requested info)
+- orazio@rome.it, LeOdi not an admin
