@@ -40,7 +40,7 @@ function PageEditorForm(props) {
                     <Col md={9} id="EditContent">
                         <Container fluid className="d-flex flex-wrap">
                             <Row className="w-100" id="titleForm">
-                                <div className="w-100 bg-light">
+                                <div className="w-100">
                                     <Form>
                                         <div className="d-flex justify-content-center align-items-center" id="title-tile">
                                             Title:<Form.Control type="text" required placeholder="Lorem Ipsum" value={title} onChange={(event) => setTitle(event.target.value)}></Form.Control><br />
