@@ -19,3 +19,16 @@
 .underNav {
   margin-top: 5rem!important;
 }
+
+.margin-top-05rem {
+  margin-top: 0.5rem;
+}
+
+.margin-right-02rem {
+  margin-right: 0.2rem;
+}
+
+.content-image {
+  max-width: 400px;
+  max-height: 500px;
+}
