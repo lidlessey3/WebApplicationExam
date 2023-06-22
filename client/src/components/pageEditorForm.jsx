@@ -74,7 +74,7 @@ function PageEditorForm(props) {
                             </div>
                         </Form>
                         <PageComponentAdder components={components} setComponents={setComponents}></PageComponentAdder>
-                        <PageSave components={components} title={title} publicationDate={publicationDate} author={author} setErrors={setErrors}></PageSave>
+                        <PageSave components={components} title={title} publicationDate={publicationDate} author={author} setErrors={setErrors} navigate={navigate}></PageSave>
                         <SaveError errors={errors}></SaveError>
                     </Col>
                 </> : <></>}
@@ -162,7 +162,7 @@ function PageSave(props) {
                 errors.push('The article must have at least one among image or text components.');
             if (props.publicationDate && props.publicationDate.isBefore(dayjs(), 'day'))
                 errors.push('The Publication date cannot be in the past.');
-            
+
             if (errors.length === 0)
                 fetch('http://localhost:4452/api/pages/new', {
                     credentials: 'include',
@@ -172,7 +172,16 @@ function PageSave(props) {
                         title: props.title, author: props.author.id,
                         publicationDate: props.publicationDate ? props.publicationDate.toISOString() : undefined, content: actualComponents
                     })
-                }).then(response => response.json()).then((response) => console.log(response));
+                }).then(response => {
+                    if (!response.ok)
+                        errors.push(response.status);
+                    return response.json()
+                }).then((response) => {
+                    if (response.error)
+                        props.setErrors([...errors, response.error]);
+                    else
+                        props.navigate(-1);
+                });
             else
                 props.setErrors(errors);
         }} className="w-100 margin-top-05rem"><i className="bi bi-check2-circle">Save</i></Button>
