@@ -163,7 +163,7 @@ app.get('/api/pages/:id', async (req, res, next) => {
     let page = await db.getPageByID(req.params.id);
 
     if (dayjs().isBefore(dayjs(page.publicationDate)) && !req.isAuthenticated())
-        res.status(401).send("You must be logged in to access this resource.");
+        res.status(401).json({ error: "You must be logged in to access this resource." });
     else
         res.status(200).json((await db.getPageContent(req.params.id)).map((elem) => { elementType: elem.type; elementData: elem.CONTENT }));
 })
