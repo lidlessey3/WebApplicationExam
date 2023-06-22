@@ -49,6 +49,12 @@ app.use(session({
 }));
 app.use(passport.authenticate('session'));
 
+function checkLoggedIn(req, res, next) {
+    if (!req.isAuthenticated())
+        res.status(401).json({ error: 'forbidden, you must be authenticated to perform this action' });
+    return next();
+}
+
 // Begin API workings
 /*
     # API
@@ -65,7 +71,7 @@ app.post('/api/session', function (req, res, next) {
             return next(err);
         if (!user) {
             // display wrong login messages
-            return res.status(401).json({error: info });
+            return res.status(401).json({ error: info });
         }
         // success, perform the login
         req.login(user, (err) => {
@@ -159,7 +165,7 @@ app.get('/api/pages/:id', async (req, res, next) => {
     if (dayjs().isBefore(dayjs(page.publicationDate)) && !req.isAuthenticated())
         res.status(401).send("You must be logged in to access this resource.");
     else
-        res.status(200).json((await db.getPageContent(req.params.id)).map((elem) => { elementType: elem.type;  elementData: elem.CONTENT}));
+        res.status(200).json((await db.getPageContent(req.params.id)).map((elem) => { elementType: elem.type; elementData: elem.CONTENT }));
 })
 /*
 ### POST
@@ -197,7 +203,6 @@ Post format:
         title,
         author,
         publicationDate,
-        id,
         content: [
             {
                 elementType,
@@ -207,32 +212,46 @@ Post format:
         ]
     }
 }
-```
+```*/
+app.post('/api/pages/new', checkLoggedIn, (req, res) => {
+    db.getUserByID(req.user.id).then((user) => {
+        let page = { ...req.body };
+        if (page.publicationDate)
+            page.publicationDate = dayjs(page.publicationDate);
+        if (user === undefined)
+            return res.status(401).json({ error: 'Forbidden, you must be authenticated to perform this action' });
+        else if (user.id !== page.author && user.admin !== 1)
+            return res.status(403).json({ error: 'Only an admin can attribute a page to another user' });
+        else if (page.title === undefined || page.title === '')
+            return res.status(400).json({ error: 'The title field cannot be empty.' });
+        else if (page.publicationDate && page.publicationDate.isBefore(dayjs(), 'day'))
+            return res.status(400).json({ error: 'The publication date cannot be in the past.' });
 
+        page.content = page.content.filter((elem) => elem.elementData !== '' && (elem.elementType === 'header' || elem.elementType === 'text' || elem.elementType === 'image'));
+        let numHeader = page.content.filter((elem) => (elem.elementType === 'header')).length;
+        if (numHeader === 0 || page.content.length === numHeader)
+            return res.status(400).json({ error: 'The page must contain at least one header and one among image or text.' });
+
+        db.newPage({ title: page.title, author: page.author, publicationDate: page.publicationDate },
+            page.content.map((elem) => ({ type: elem.elementType, CONTENT: elem.elementData }))).then((result) => res.status(200).json(result))
+            .catch((err) => console.log(err));
+    })
+});
+/*
 ## /api/users/list
 ### GET
 Return a list of all the users if the asker is an admin
-
-## /api/user/new
-### POST
-creates a new user:
-Post format:
-```
-{
-    mail,
-    displayname,
-    password
-}
-```
 */
-app.get('/api/users/list', (req, res) => {
+app.get('/api/users/list', checkLoggedIn, (req, res) => {
     // check if the user is an admin
-    if (req.user === undefined || req.user.admin !== 1)
-        return res.status(401).json({ error: "Only admins can access this" });
-    db.getAllUsers().then((result) => {
-        return res.status(200).json(result);
+    db.getUserByID(req.user.id).then((user) => {
+        if (user === undefined || user.admin === 0)
+            return res.status(403).json({ error: "Only admins can access this" });
+        db.getAllUsers().then((result) => {
+            return res.status(200).json(result);
+        });
     });
-})
+});
 /*
 
 ## /api/site/name

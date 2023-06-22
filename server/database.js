@@ -152,14 +152,33 @@ exports.updatePage = async function updatePage(page, content) {
 exports.newPage = async function newPage(page, content) {
     const sqlPage = "INSERT INTO pages(author, publicationDate, creationDate, title) VALUES(?, ?, ?, ?);";
     const sqlNewContent = "INSERT INTO pagescontent(page, position, type, CONTENT) VALUES(?, ?, ?, ?);";
-    db.run(sqlPage, [page.author, page.publicationDate.toISOString(), dayjs.toISOString(), page.title], (result, err) => {
-        if (err) {
-            throw err;
-        }
-        else
-            content.forEach(element => {
-                db.run(sqlNewContent, [page.id, element.position, element.type, element.CONTENT]);
-            });
+    const now = dayjs();
+    return new Promise((resolve, reject) => {
+        db.run(sqlPage, [page.author, page.publicationDate ? page.publicationDate.toISOString() : undefined, now.toISOString(), page.title], (result, err) => {
+            console.log(result);
+            if (err) {
+                reject(err);
+                return;
+            }
+            else {
+                const sqlNewPage = 'SELECT id FROM pages WHERE author = ? AND creationDate = ? AND title = ?;';
+                db.get(sqlNewPage, [page.author, now.toISOString(), page.title], (err, row) => {
+                    if (err) {
+                        reject(err);
+                        return;
+                    }
+
+                    Promise.all(content.map((element, index) => new Promise((resolve, reject) => {
+                        db.run(sqlNewContent, [row.id, index, element.type, element.CONTENT], (result, err) => {
+                            if (err)
+                                reject(err);
+                            else
+                                resolve(result);
+                        });
+                    }))).then((result) => resolve(result)).catch((err) => reject(err));
+                });
+            }
+        });
     });
 }
 

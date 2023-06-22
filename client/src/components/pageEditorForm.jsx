@@ -168,8 +168,11 @@ function PageSave(props) {
                     credentials: 'include',
                     method: 'post',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ title: props.title, author: props.author.id, publicationDate: props.publicationDate.toISOString(), content: actualComponents })
-                });
+                    body: JSON.stringify({
+                        title: props.title, author: props.author.id,
+                        publicationDate: props.publicationDate ? props.publicationDate.toISOString() : undefined, content: actualComponents
+                    })
+                }).then(response => response.json()).then((response) => console.log(response));
             else
                 props.setErrors(errors);
         }} className="w-100 margin-top-05rem"><i className="bi bi-check2-circle">Save</i></Button>
