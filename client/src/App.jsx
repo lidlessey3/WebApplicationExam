@@ -16,14 +16,14 @@ function App() {
 
   useEffect(() => {
     fetch('http://localhost:4452/api/site/name').then((res) => res.json()).then((res) => updateWebsiteName(res.value));
-    const interval = setTimeout(() => fetch('http://localhost:4452/api/site/name').then((res) => res.json()).then((res) => updateWebsiteName(res.value)), 60* 1000);
-    
+    const interval = setTimeout(() => fetch('http://localhost:4452/api/site/name').then((res) => res.json()).then((res) => updateWebsiteName(res.value)), 60 * 1000);
+
     return () => clearInterval(interval);
   }, [websiteName]);
 
   useEffect(() => {
     fetch('http://localhost:4452/api/session/current', { credentials: "include" }).then((answer) => answer.json()).then((answer) => {
-      if (answer.error !== undefined && answer !== user) 
+      if (answer.error !== undefined && answer !== user)
         changeUser(answer);
     });
   }, []);
@@ -39,10 +39,10 @@ function App() {
             <Route element={<><LoginForm updateUser={changeUser} /></>} path='/login'>
 
             </Route>
-            <Route element={<><PageDisplay /></>} path='/page/:id'>
-              <Route element={<><PageEditorForm /></>} path='edit'>
+            <Route element={<><PageEditorForm user={user} /></>} path='/page/:id/edit'>
 
-              </Route>
+            </Route>
+            <Route element={<><PageDisplay /></>} path='/page/:id'>
             </Route>
             <Route element={<><PageEditorForm user={user} /></>} path='/page/new'>
 

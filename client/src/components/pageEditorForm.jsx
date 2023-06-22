@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Row, Col, Form, Container, Button, Collapse } from 'react-bootstrap';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import './../style/pageEditorForm.css'
 import dayjs from 'dayjs';
 import { ContentHeatherEditor, ContentImageEditor, ContentTextEditor } from "./pageContent";
@@ -14,6 +14,7 @@ function PageEditorForm(props) {
     const [users, setUsers] = useState([]);
     const [errors, setErrors] = useState([]);
     const navigate = useNavigate();
+    const { id } = useParams();
 
     useEffect(() => {
         if (props.user === undefined) {
@@ -28,6 +29,12 @@ function PageEditorForm(props) {
                 setUsers(response);
             });
     }, [props.user]);
+
+    useEffect(() => {
+        if (!id)
+            return;
+        fetch('http://localhost:4452/api/pages/' + id, { credentials: 'include' }).then((response) => response.json()).then((response) => setComponents(response));
+    });
 
     return (
         <>
