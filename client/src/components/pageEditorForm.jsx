@@ -34,7 +34,7 @@ function PageEditorForm(props) {
         if (!id)
             return;
         fetch('http://localhost:4452/api/pages/' + id, { credentials: 'include' }).then((response) => response.json()).then((response) => setComponents(response));
-    });
+    }, []);
 
     return (
         <>
