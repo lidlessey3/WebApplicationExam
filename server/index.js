@@ -234,7 +234,7 @@ app.post('/api/pages/new', checkLoggedIn, (req, res) => {
 
         db.newPage({ title: page.title, author: page.author, publicationDate: page.publicationDate },
             page.content.map((elem) => ({ type: elem.elementType, CONTENT: elem.elementData }))).then((result) => res.status(200).json(result))
-            .catch((err) => console.log(err));
+            .catch((err) => res.status(500).json(err));
     })
 });
 /*
