@@ -37,7 +37,6 @@ passport.serializeUser(function (user, cb) {
 });
 
 passport.deserializeUser(function (user, cb) {
-    console.log('deserializing');
     return cb(null, user);
 });
 
@@ -64,8 +63,6 @@ function checkLoggedIn(req, res, next) {
 sets the session cookie
 */
 app.post('/api/session', function (req, res, next) {
-    console.log("Received the following login request:");
-    console.log(req.body);
     passport.authenticate('local', (err, user, info) => {
         if (err)
             return next(err);
@@ -79,7 +76,6 @@ app.post('/api/session', function (req, res, next) {
                 return next(err);
 
             // req.user contains the authenticated user, we send all the user info back
-            console.log(req.session);
             return res.status(201).json(req.user);
         });
     })(req, res, next);
@@ -95,7 +91,6 @@ app.get('/api/session/current', (req, res, next) => {
 removes the session cookie
 */
 app.delete('/api/session/current', (req, res) => {
-    console.log("logging out");
     req.logout(() => {
         res.end();
     });
@@ -122,7 +117,6 @@ returns a list of all published pages with the following info:
 */
 app.get('/api/pages', (req, res) => {
     let elaborate = (value) => {
-        console.log(value);
         res.status(200).json(value.map((elem) => {
             let result = {
                 title: elem.title,
@@ -164,6 +158,7 @@ app.get('/api/pages/:id', (req, res, next) => {
             res.status(401).json({ error: "You must be logged in to access this resource." });
         else
             db.getPageContent(page.id).then((result) => {
+                console.log(result);
                 res.status(200).json(result.map((item) => ({ elementType: item.type, elementData: item.CONTENT })));
             });
     });
@@ -210,7 +205,10 @@ app.put('/api/pages/:id', checkLoggedIn, (req, res, next) => {
         
         db.updatePage({ title: page.title, author: page.author, publicationDate: page.publicationDate, id: OriginalPage.id },
             page.content.map((elem) => ({ type: elem.elementType, CONTENT: elem.elementData })))
-            .then((result) => res.status(200).json(result), (err) => res.status(500).json(err));
+            .then((result) => res.status(200).json(result), (err) => {
+                console.log(err);
+                res.status(500).json(err);
+            });
 
     }).catch((err) => {
         res.status(404).json({ error: 'Page not found' })

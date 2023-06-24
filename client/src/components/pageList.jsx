@@ -18,36 +18,25 @@ function page(id, publicationDate, creationDate, title, author) {
         this.creationDate = dayjs(creationDate);
     this.title = title;
     this.author = author;
+    console.log(this);
 }
 
 function PageList(props) {
-    const [pages, updatePages] = useState([]);
-
-    useEffect(() => {
-        fetch('http://localhost:4452/api/pages', {credentials: "include"}).then((result) => result.json()).then((json) => {
-            console.log(json);
-            updatePages(json.map((elem) => {
-                return new page(elem.id, elem.publicationDate, elem.creationDate, elem.title, new author(elem.author.id, elem.author.name));
-            }));
-        });
-    }, [props.user]);
-
-
-
     return (
         <>
             <Row className='w-100 underNav' id='pageList'>
-                {props.user === undefined ? <Col md={12} xl={12} id='pageTable'><PageTable pages={pages}></PageTable></Col> :
-                    <><Col md={4} xl={3}><UserMenu user={props.user} pages={pages.filter((elem) => {
+                {props.user === undefined ? <Col md={12} xl={12} id='pageTable'><PageTable pages={props.pages}></PageTable></Col> :
+                    <><Col md={4} xl={3}><UserMenu user={props.user} pages={props.pages.filter((elem) => {
                         if (elem.publicationDate === undefined)
                             return true;
                         else
-                            return elem.publicationDate.isAfter(dayjs());
-                    }).sort((a,b) => a.creationDate.isAfter(b.creationDate) ? 1 : -1)}></UserMenu></Col><Col md={8} xl={9}><PageTable user={props.user} pages={pages.filter((elem) => {
+                            return elem.publicationDate.isAfter(dayjs(), 'day');
+                    }).sort((a, b) => a.creationDate.isAfter(b.creationDate) ? 1 : -1)}></UserMenu></Col><Col md={8} xl={9}><PageTable user={props.user}
+                        pages={props.pages.filter((elem) => {
                         if (elem.publicationDate === undefined)
                             return false;
                         else
-                            return dayjs().isAfter(elem.publicationDate);
+                            return dayjs().isAfter(elem.publicationDate, 'day') || dayjs().isSame(elem.publicationDate, 'day');
                     }).sort((a, b) => a.publicationDate.isAfter(b.publicationDate) ? 1 : -1)}></PageTable></Col></>}
             </Row>
         </>
@@ -74,14 +63,14 @@ function PageRow(props) {
                     <h4><Link to={'/page/' + props.page.id}>{props.page.title}</Link></h4>
                 </td>
                 <td>
-                    <i>{ 'by ' + props.page.author.username }</i>
+                    <i>{'by ' + props.page.author.name}</i>
                 </td>
                 <td>
-                    <p className="text-secondary">{props.page.publicationDate.format("DD/MM/YYYY")}</p>
+                    <p className="text-secondary">{props.page.publicationDate ? props.page.publicationDate.format("DD/MM/YYYY") : 'Not published'}</p>
                 </td>
                 {(props.user !== undefined && (props.user.id === props.page.author.id || props.user.admin === 1)) ? <td>
-                    <Link to={'/page/' + props.page.id + '/edit'}><div className="card outline-secondary"><i className="bi bi-pencil-fil"></i></div></Link>
-                </td>:<></> }
+                    <Link to={'/page/' + props.page.id + '/edit'}><div className="card outline-secondary"><i className="bi bi-pencil-fill"></i></div></Link>
+                </td> : <></>}
             </tr>
         </>
     );

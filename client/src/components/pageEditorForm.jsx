@@ -33,7 +33,17 @@ function PageEditorForm(props) {
     useEffect(() => {
         if (!id)
             return;
-        fetch('http://localhost:4452/api/pages/' + id, { credentials: 'include' }).then((response) => response.json()).then((response) => setComponents(response));
+        fetch('http://localhost:4452/api/pages/' + id, { credentials: 'include' }).then((response) => response.json()).then((response) => {
+            if (response.error) {
+                setErrors([response.error]);
+                return;
+            }
+            setComponents(response);
+            let page = props.pages.find((elem) => elem.id == id);
+            setAuthor(page.author);
+            setPublicationDate(page.publicationDate ? dayjs(page.publicationDate) : undefined);
+            setTitle(page.title);
+        });
     }, []);
 
     return (
@@ -81,7 +91,8 @@ function PageEditorForm(props) {
                             </div>
                         </Form>
                         <PageComponentAdder components={components} setComponents={setComponents}></PageComponentAdder>
-                        <PageSave components={components} title={title} publicationDate={publicationDate} author={author} setErrors={setErrors} navigate={navigate}></PageSave>
+                        <PageSave components={components} title={title} publicationDate={publicationDate} author={author} setErrors={setErrors} navigate={navigate}
+                            pages={props.pages} setPages={props.setPages} id={id} />
                         <SaveError errors={errors}></SaveError>
                     </Col>
                 </> : <></>}
@@ -124,16 +135,12 @@ function PageEditorArea(props) {
                     props.updateComponents(newComponents);
                 };
                 let moveUp = () => {
-                    if (index === 0)
-                        return;
                     let newComponents = Array(...props.components);
                     let [newItem] = newComponents.splice(index, 1);
                     newComponents.splice(index - 1, 0, newItem);
                     props.updateComponents(newComponents);
                 };
                 let moveDown = () => {
-                    if (index === props.components.length - 1)
-                        return;
                     let newComponents = Array(...props.components);
                     let [newItem] = newComponents.splice(index, 1);
                     newComponents.splice(index + 1, 0, newItem);
@@ -142,13 +149,13 @@ function PageEditorArea(props) {
                 switch (element.elementType) {
                     case 'header':
                         return (<ContentHeatherEditor key={index} data={element} remove={remove} updateItem={updateItem}
-                            moveUp={moveUp} moveDown={moveDown}></ContentHeatherEditor>);
+                            moveUp={index === 0 ? undefined : moveUp} moveDown={index === props.components.length - 1 ? undefined : moveDown}></ContentHeatherEditor>);
                     case 'text':
                         return (<ContentTextEditor key={index} data={element} remove={remove} updateItem={updateItem}
-                            moveUp={moveUp} moveDown={moveDown}></ContentTextEditor>);
+                            moveUp={index === 0 ? undefined : moveUp} moveDown={index === props.components.length - 1 ? undefined : moveDown}></ContentTextEditor>);
                     case 'image':
                         return (<ContentImageEditor key={index} data={element} remove={remove} updateItem={updateItem}
-                            moveUp={moveUp} moveDown={moveDown}></ContentImageEditor>);
+                            moveUp={index === 0 ? undefined : moveUp} moveDown={index === props.components.length - 1 ? undefined : moveDown}></ContentImageEditor>);
                 }
             })}
         </Row>
@@ -167,28 +174,69 @@ function PageSave(props) {
                 errors.push('The article must have at least an header component.');
             if ((actualComponents.length - headerComponentsNum) === 0)
                 errors.push('The article must have at least one among image or text components.');
-            if (props.publicationDate && props.publicationDate.isBefore(dayjs(), 'day'))
-                errors.push('The Publication date cannot be in the past.');
+            if (props.publicationDate && ((props.id && props.publicationDate.isBefore(props.pages.find((pg) => pg.id == props.id).creationDate, 'day'))
+                || props.publicationDate.isBefore(dayjs(), 'day')))
+                errors.push('The publication date cannot be before its creation');
 
             if (errors.length === 0)
-                fetch('http://localhost:4452/api/pages/new', {
-                    credentials: 'include',
-                    method: 'post',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        title: props.title, author: props.author.id,
-                        publicationDate: props.publicationDate ? props.publicationDate.toISOString() : undefined, content: actualComponents
-                    })
-                }).then(response => {
-                    if (!response.ok)
-                        errors.push(response.status);
-                    return response.json()
-                }).then((response) => {
-                    if (response.error)
-                        props.setErrors([...errors, response.error]);
-                    else
-                        props.navigate(-1);
-                });
+                if (!props.id)
+                    fetch('http://localhost:4452/api/pages/new', {
+                        credentials: 'include',
+                        method: 'post',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            title: props.title, author: props.author.id,
+                            publicationDate: props.publicationDate ? props.publicationDate.toISOString() : undefined, content: actualComponents
+                        })
+                    }).then(response => {
+                        if (!response.ok)
+                            errors.push(response.status);
+                        return response.json()
+                    }).then((response) => {
+                        if (response.error)
+                            props.setErrors([...errors, response.error]);
+                        else {
+                            props.navigate(-1);
+                            let newPages = Array(...props.pages);
+                            newPages.push({
+                                id: response.id, title: props.title, author: props.author,
+                                publicationDate: props.publicationDate ? props.publicationDate : undefined, creationDate: dayjs()
+                            });
+                            props.setPages(newPages);
+                        }
+                    });
+                else
+                    fetch('http://localhost:4452/api/pages/' + props.id, {
+                        credentials: 'include',
+                        method: 'put',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            title: props.title, author: props.author.id,
+                            publicationDate: props.publicationDate ? props.publicationDate.toISOString() : undefined, content: actualComponents
+                        })
+                    }).then(response => {
+                        if (!response.ok)
+                            errors.push(response.status);
+                        return response.json()
+                    }).then((response) => {
+                        if (response.error)
+                            props.setErrors([...errors, response.error]);
+                        else {
+                            props.navigate(-1);
+                            let newPages = Array(...props.pages);
+                            newPages = newPages.map((elem) => {
+                                if (elem.id != props.id)
+                                    return elem;
+                                else
+                                    return ({
+                                        id: elem.id, title: props.title, author: props.author,
+                                        publicationDate: props.publicationDate ? props.publicationDate : undefined,
+                                        creationDate: elem.creationDate
+                                    });
+                            });
+                            props.setPages(newPages);
+                        }
+                    });
             else
                 props.setErrors(errors);
         }} className="w-100 margin-top-05rem"><i className="bi bi-check2-circle">Save</i></Button>

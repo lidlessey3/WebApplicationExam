@@ -16,8 +16,13 @@ function ContentHeatherEditor(props) {
             <div className='contentEditor card'>
                 <div className='d-flex justify-content-start align-items-center'>
                     <Button variant='outline-danger' onClick={(event) => props.remove()} className='margin-right-02rem'><i className='bi bi-x-lg'></i></Button>
-                    <Button variant='outline-info' onClick={(event) => props.moveUp()} className='margin-right-02rem'><i className='bi bi-arrow-up'></i></Button>
-                    <Button variant='outline-info' onClick={(event) => props.moveDown()} className='margin-right-02rem'><i className='bi bi-arrow-down'></i></Button>
+                    {props.moveUp ? <Button variant='outline-info' onClick={(event) => props.moveUp()} className='margin-right-02rem'>
+                        <i className='bi bi-arrow-up'></i>
+                    </Button>
+                        : <></>}
+                    {props.moveDown ? <Button variant='outline-info' onClick={(event) => props.moveDown()} className='margin-right-02rem'>
+                        <i className='bi bi-arrow-down'></i>
+                    </Button>: <></>}
                     <h4>Header</h4>
                 </div>
                 <Form className='margin-top-05rem'>
@@ -43,8 +48,13 @@ function ContentTextEditor(props) {
             <div className='contentEditor card'>
                 <div className='d-flex justify-content-start align-items-center'>
                     <Button variant='outline-danger' onClick={(event) => props.remove()} className='margin-right-02rem'><i className='bi bi-x-lg'></i></Button>
-                    <Button variant='outline-info' onClick={(event) => props.moveUp()} className='margin-right-02rem'><i className='bi bi-arrow-up'></i></Button>
-                    <Button variant='outline-info' onClick={(event) => props.moveDown()} className='margin-right-02rem'><i className='bi bi-arrow-down'></i></Button>
+                    {props.moveUp ? <Button variant='outline-info' onClick={(event) => props.moveUp()} className='margin-right-02rem'>
+                        <i className='bi bi-arrow-up'></i>
+                    </Button>
+                        : <></>}
+                    {props.moveDown ? <Button variant='outline-info' onClick={(event) => props.moveDown()} className='margin-right-02rem'>
+                        <i className='bi bi-arrow-down'></i>
+                    </Button>: <></>}
                     <h4>Text</h4>
                 </div>
                 <textarea value={props.data.elementData} onChange={(event) => {
@@ -68,8 +78,13 @@ function ContentImageEditor(props) {
             <div className='contentEditor card'>
                 <div className='d-flex justify-content-start align-items-center'>
                     <Button variant='outline-danger' onClick={(event) => props.remove()} className='margin-right-02rem'><i className='bi bi-x-lg'></i></Button>
-                    <Button variant='outline-info' onClick={(event) => props.moveUp()} className='margin-right-02rem'><i className='bi bi-arrow-up'></i></Button>
-                    <Button variant='outline-info' onClick={(event) => props.moveDown()} className='margin-right-02rem'><i className='bi bi-arrow-down'></i></Button>
+                    {props.moveUp ? <Button variant='outline-info' onClick={(event) => props.moveUp()} className='margin-right-02rem'>
+                        <i className='bi bi-arrow-up'></i>
+                    </Button>
+                        : <></>}
+                    {props.moveDown ? <Button variant='outline-info' onClick={(event) => props.moveDown()} className='margin-right-02rem'>
+                        <i className='bi bi-arrow-down'></i>
+                    </Button>: <></>}
                     <h4>Image</h4>
                 </div>
                 <img src={images[props.data.elementData]} className='content-image margin-top-05rem'></img>

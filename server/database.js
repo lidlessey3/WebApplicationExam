@@ -139,25 +139,26 @@ exports.updatePage = function updatePage(page, content) {
     const sqlPage = "UPDATE pages SET author = ?, publicationDate = ?, title = ? WHERE id = ?;";
     const sqlNewContent = "INSERT INTO pagescontent(page, position, type, CONTENT) VALUES(?, ?, ?, ?);";
     const sqlRemoveContent = "DELETE FROM pagescontent WHERE page = ?;";
+    console.log(page, content);
     return new Promise((resolve, reject) => {
-        db.run(sqlPage, [page.author, page.publicationDate.toISOString(), page.title, page.id], (result, err) => {
+        db.run(sqlPage, [page.author, page.publicationDate ? page.publicationDate.toISOString() : undefined, page.title, page.id], (err) => {
             if (err)
                 reject(err);
             else
-                db.run(sqlRemoveContent, [page.id], (result, err) => {
+                db.run(sqlRemoveContent, [page.id], function (err) {
                     if (err) {
                         reject(err);
                     }
                     else
-                        Promise.all(content.map(element => {
-                            return new Promise((resolve, reject) => db.run(sqlNewContent, [page.id, element.position, element.type, element.CONTENT], (result, err) => {
+                        Promise.all(content.map((element, index) => {
+                            return new Promise((resolve, reject) => db.run(sqlNewContent, [page.id, index, element.type, element.CONTENT], (err) => {
                                 if (err)
                                     reject(err);
                                 else
-                                    resolve(result);
+                                    resolve(true);
                             }));
                         })).then((result) => {
-                            resolve(result);
+                            resolve(true);
                         }).catch((err) => {
                             reject(err);
                         });
@@ -171,29 +172,21 @@ exports.newPage = function newPage(page, content) {
     const sqlNewContent = "INSERT INTO pagescontent(page, position, type, CONTENT) VALUES(?, ?, ?, ?);";
     const now = dayjs();
     return new Promise((resolve, reject) => {
-        db.run(sqlPage, [page.author, page.publicationDate ? page.publicationDate.toISOString() : undefined, now.toISOString(), page.title], (result, err) => {
-            console.log(result);
+        db.run(sqlPage, [page.author, page.publicationDate ? page.publicationDate.toISOString() : undefined, now.toISOString(), page.title], function (err) {
+            console.log(this.lastID);
             if (err) {
                 reject(err);
                 return;
             }
             else {
-                const sqlNewPage = 'SELECT id FROM pages WHERE author = ? AND creationDate = ? AND title = ?;';
-                db.get(sqlNewPage, [page.author, now.toISOString(), page.title], (err, row) => {
-                    if (err) {
-                        reject(err);
-                        return;
-                    }
-
-                    Promise.all(content.map((element, index) => new Promise((resolve, reject) => {
-                        db.run(sqlNewContent, [row.id, index, element.type, element.CONTENT], (result, err) => {
-                            if (err)
-                                reject(err);
-                            else
-                                resolve(result);
-                        });
-                    }))).then((result) => resolve(result)).catch((err) => reject(err));
-                });
+                Promise.all(content.map((element, index) => new Promise((resolve, reject) => {
+                    db.run(sqlNewContent, [this.lastID, index, element.type, element.CONTENT], (result, err) => {
+                        if (err)
+                            reject(err);
+                        else
+                            resolve(result);
+                    });
+                }))).then((result) => resolve(result)).catch((err) => reject(err));
             }
         });
     });

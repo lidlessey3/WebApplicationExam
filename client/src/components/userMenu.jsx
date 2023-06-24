@@ -27,13 +27,13 @@ function UnpublishedRow(props) {
                     <h4><Link to={'/page/' + props.page.id}>{props.page.title}</Link></h4>
                 </td>
                 <td>
-                    <i>{'by ' + props.page.author.username}</i>
+                    <i>{'by ' + props.page.author.name}</i>
                 </td>
                 <td>
                     <p className="text-secondary">{props.page.creationDate.format("DD/MM/YYYY")}</p>
                 </td>
                 {(props.user.id === props.page.author.id || props.user.admin === 1) ? <td>
-                    <Link to={'/page/' + props.page.id + '/edit'}><div className="card outline-secondary"><i className="bi bi-pencil-fil"></i></div></Link>
+                    <Link to={'/page/' + props.page.id + '/edit'}><div className="card outline-secondary"><i className="bi bi-pencil-fill"></i></div></Link>
                 </td> : <></>}
             </tr>
         </>
