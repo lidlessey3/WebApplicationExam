@@ -17,7 +17,19 @@ function UserMenu(props) {
                         <td>Author</td>
                         <td>Creation Date</td>
                     </tr>
-                    {props.pages.map((page) => <UnpublishedRow key={page.id} page={page} user={props.user}></UnpublishedRow>)}
+                    {props.pages.map((page) => {
+                        const remove = () => {
+                            let newPages = [];
+                            for (let i = 0; i < props.allPages.length; i++) {
+                                if (page.id !== props.allPages[i].id)
+                                    newPages.push(props.allPages[i]);
+                            }
+                            console.log(props.allPages);
+                            console.log(newPages);
+                            props.setPages(newPages);
+                        };
+                        return (<UnpublishedRow key={page.id} page={page} user={props.user} remove={remove}></UnpublishedRow>);
+                    })}
                 </tbody>
             </Table>
         </>
@@ -42,7 +54,16 @@ function UnpublishedRow(props) {
                         <Link to={'/page/' + props.page.id + '/edit'}><div className="card outline-secondary"><i className="bi bi-pencil-fill"></i></div></Link>
                     </td>
                     <td>
-                        <Button variant="outline-danger" onClick={() => { }}><i className="bi bi-trash3-fill"></i></Button>
+                        <Button variant="outline-danger" onClick={() => { 
+                             fetch('http://localhost:4452/api/pages/' + props.page.id, { method: 'DELETE', credentials: 'include' }).then((result) => result.json())
+                             .then((result) => {
+                                 console.log(result);
+                                 if (!result.error)
+                                     props.remove();
+                                 else
+                                     console.log('AAAAAa', result.error);
+                             });
+                         }}><i className="bi bi-trash3-fill"></i></Button>
                     </td>
                 </> : <></>}
             </tr>

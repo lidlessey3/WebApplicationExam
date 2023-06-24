@@ -126,11 +126,11 @@ exports.getAllPages = function getAllPages() {
 exports.deletePage = function deletePage(id) {
     return new Promise((resolve, reject) => {
         const sql = "DELETE FROM pages WHERE id = ?;";
-        db.run(sql, [id], (result, err) => {
+        db.run(sql, [id], (err) => {
             if (err)
                 reject(err);
             else
-                resolve(result);
+                resolve(true);
         });
     })
 }
@@ -186,7 +186,7 @@ exports.newPage = function newPage(page, content) {
                         else
                             resolve(result);
                     });
-                }))).then((result) => resolve(result)).catch((err) => reject(err));
+                }))).then((result) => resolve({id: this.lastID})).catch((err) => reject(err));
             }
         });
     });

@@ -51,7 +51,7 @@ function App() {
             <Container fluid className='d-flex align-items-stretch'>
               <Outlet></Outlet>
             </Container></>}>
-            <Route element={<><PageList user={user} pages={pages}></PageList></>} path='/'>
+            <Route element={<><PageList user={user} pages={pages} setPages={setPages}></PageList></>} path='/'>
 
             </Route>
             <Route element={<><LoginForm updateUser={changeUser} /></>} path='/login'>
@@ -60,7 +60,7 @@ function App() {
             <Route element={<><PageEditorForm user={user} pages={pages} setPages={setPages} /></>} path='/page/:id/edit'>
 
             </Route>
-            <Route element={<><PageDisplay user={user} pages={pages} /></>} path='/page/:id'>
+            <Route element={<><PageDisplay user={user} pages={pages} setPages={setPages} /></>} path='/page/:id'>
             </Route>
             <Route element={<><PageEditorForm user={user} pages={pages} setPages={setPages} /></>} path='/page/new'>
 

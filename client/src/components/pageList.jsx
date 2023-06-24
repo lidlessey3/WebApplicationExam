@@ -1,25 +1,8 @@
-import { useEffect, useState } from "react";
 import { Row, Col, Table, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import dayjs from 'dayjs';
 import UserMenu from "./userMenu";
 import './../style/pageList.css';
-
-function author(id, username) {
-    this.id = id;
-    this.username = username;
-}
-
-function page(id, publicationDate, creationDate, title, author) {
-    this.id = id;
-    if (publicationDate !== undefined)
-        this.publicationDate = dayjs(publicationDate);
-    if (creationDate !== undefined)
-        this.creationDate = dayjs(creationDate);
-    this.title = title;
-    this.author = author;
-    console.log(this);
-}
 
 function PageList(props) {
     return (
@@ -31,13 +14,14 @@ function PageList(props) {
                             return true;
                         else
                             return elem.publicationDate.isAfter(dayjs(), 'day');
-                    }).sort((a, b) => a.creationDate.isAfter(b.creationDate) ? 1 : -1)}></UserMenu></Col><Col md={8} xl={9}><PageTable user={props.user}
+                    }).sort((a, b) => a.creationDate.isAfter(b.creationDate) ? 1 : -1)} allPages={props.pages} setPages={props.setPages}></UserMenu></Col><Col md={8} xl={9}><PageTable user={props.user}
                         pages={props.pages.filter((elem) => {
                             if (elem.publicationDate === undefined)
                                 return false;
                             else
                                 return dayjs().isAfter(elem.publicationDate, 'day') || dayjs().isSame(elem.publicationDate, 'day');
-                        }).sort((a, b) => a.publicationDate.isAfter(b.publicationDate) ? 1 : -1)}></PageTable></Col></>}
+                        }).sort((a, b) => a.publicationDate.isAfter(b.publicationDate) ? 1 : -1)}
+                        setPages={props.setPages} allPages={props.pages}></PageTable></Col></>}
             </Row>
         </>
     );
@@ -53,7 +37,22 @@ function PageTable(props) {
                         <td>Author</td>
                         <td>Publication Date</td>
                     </tr>
-                    {props.pages.map((page) => <PageRow page={page} user={props.user} key={page.id} />)}
+                    {props.pages.map((page, index) => {
+                        const remove = () => {
+                            if (!props.allPages) {
+                                return;
+                            }
+                            let newPages = [];
+                            for (let i = 0; i < props.allPages.length; i++) {
+                                if (page.id !== props.allPages[i].id)
+                                    newPages.push(props.allPages[i]);
+                            }
+                            console.log(props.allPages);
+                            console.log(newPages);
+                            props.setPages(newPages);
+                        };
+                        return (<PageRow page={page} user={props.user} key={page.id} remove={remove} />);
+                    })}
                 </tbody>
             </Table>
         </>
@@ -78,7 +77,16 @@ function PageRow(props) {
                         <Link to={'/page/' + props.page.id + '/edit'}><div className="card outline-secondary"><i className="bi bi-pencil-fill"></i></div></Link>
                     </td>
                     <td>
-                        <Button variant="outline-danger" onClick={() => { }}><i className="bi bi-trash3-fill"></i></Button>
+                        <Button variant="outline-danger" onClick={() => {
+                            fetch('http://localhost:4452/api/pages/' + props.page.id, { method: 'DELETE', credentials: 'include' }).then((result) => result.json())
+                                .then((result) => {
+                                    console.log(result);
+                                    if (!result.error)
+                                        props.remove();
+                                    else
+                                        console.log('AAAAAa', result.error);
+                                });
+                        }}><i className="bi bi-trash3-fill"></i></Button>
                     </td>
                 </> : <></>}
             </tr>

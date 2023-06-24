@@ -196,6 +196,7 @@ function PageSave(props) {
                         if (response.error)
                             props.setErrors([...errors, response.error]);
                         else {
+                            console.log('Response: ', response);
                             props.navigate(-1);
                             let newPages = Array(...props.pages);
                             newPages.push({

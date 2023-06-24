@@ -5,7 +5,7 @@ import { ContentHeather, ContentImage, ContentText } from "./pageContent";
 
 function PageDisplay(props) {
     const { id } = useParams();
-    const [page, setPage] = useState({ title: '' });
+    const [page, setPage] = useState({ author: {} });
     const [components, setComponents] = useState([]);
     const navigate = useNavigate();
 
@@ -27,12 +27,26 @@ function PageDisplay(props) {
                     <i className="bi bi-arrow-left-circle" id="backArrow" onClick={() => {
                         navigate(-1);
                     }}></i>
-                    {props.user ? (props.user.admin || props.user.id === page.author.id) ? <>
+                    { props.user && page ? (props.user.admin || props.user.id === page.author.id) ? <>
                         <div className="outline-info card text-light margin-top-05rem">
                             <Link to='edit'><i className="bi bi-pencil-fill"></i></Link>
                         </div>
                         <Button variant='outline-danger' className="margin-top-05rem" onClick={() => {
-
+                            fetch('http://localhost:4452/api/pages/' + id, { method: 'DELETE', credentials: 'include' }).then((result) => result.json())
+                                .then((result) => {
+                                    console.log(result);
+                                    if (!result.error) {
+                                        let newPages = [];
+                                        for (let i = 0; i < props.pages.length; i++) {
+                                            if (page.id !== props.pages[i].id)
+                                                newPages.push(props.pages[i]);
+                                        }
+                                        props.setPages(newPages);
+                                        navigate(-1);
+                                    }
+                                    else
+                                        console.log('AAAAAa', result.error);
+                                });
                         }}><i className="bi bi-trash3-fill"></i></Button>
                     </> : <></> : <></>}
                 </Col>
@@ -46,7 +60,7 @@ function PageDisplay(props) {
                         <PageVisualize components={components}></PageVisualize>
                     </Container>
                 </Col>
-            </Row>
+            </Row >
         </>
     );
 }

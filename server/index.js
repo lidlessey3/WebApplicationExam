@@ -188,7 +188,7 @@ Post format:
 */
 app.put('/api/pages/:id', checkLoggedIn, (req, res, next) => {
     db.getPageByID(req.params.id).then((OriginalPage) => {
-        if ((req.user.id !== OriginalPage.author || OriginalPage.author !== req.body.author) && req.user.admin === 0) {
+        if ((req.user.id != OriginalPage.author || OriginalPage.author !== req.body.author) && req.user.admin === 0) {
             return res.status(403).json({ error: 'You do cannot edit another user page' });
         }
         let page = { ...req.body };
@@ -216,8 +216,18 @@ app.put('/api/pages/:id', checkLoggedIn, (req, res, next) => {
 });
 /*
 ### DELETE
-if the user has permission delete the page
+if the user has permission delete the page*/
 
+app.delete('/api/pages/:id', checkLoggedIn, (req, res) => {
+    db.getPageByID(req.params.id).then((page) => {
+        console.log(req.user);
+        if (req.user.id != page.author && req.user.admin === 0)
+            return res.status(403).json({ error: "You cannot delete another user's page." });
+        db.deletePage(req.params.id).then((result) => res.status(200).json({ok: true})).catch((err) => res.status(500).json({ error: err }));
+    }).catch((err) => res.status(404).json({ error: 'Page not found.' }));
+});
+
+/*
 ## /api/pages/new
 ### POST
 creates the page:
