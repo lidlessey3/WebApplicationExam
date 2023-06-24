@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { Row, Col, Container } from 'react-bootstrap';
+import { useNavigate, useParams, Link } from "react-router-dom";
+import { Row, Col, Container, Button } from 'react-bootstrap';
 import { ContentHeather, ContentImage, ContentText } from "./pageContent";
 
 function PageDisplay(props) {
@@ -28,8 +28,12 @@ function PageDisplay(props) {
                         navigate(-1);
                     }}></i>
                     {props.user ? (props.user.admin || props.user.id === page.author.id) ? <>
-                        <i className="bi bi-pencil-fill"></i>
-                        <i className="bi bi-pencil-fill"></i>
+                        <div className="outline-info card">
+                            <Link to='edit'><i className="bi bi-pencil-fill"></i></Link>
+                        </div>
+                        <Button variant='outline-danger' onClick={() => {
+
+                        }}><i className="bi bi-trash3-fill"></i></Button>
                     </> : <></> : <></>}
                 </Col>
                 <Col md={11} id="ViewContent">
