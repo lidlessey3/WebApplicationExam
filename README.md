@@ -168,3 +168,5 @@
 
 - virgilio@rome.it, Eneide is an admin
 - orazio@rome.it, LeOdi not an admin
+- seneca@rome.it, BrevitateVitae is an admin
+- giovenale@rome.it, LeSatire not an admin

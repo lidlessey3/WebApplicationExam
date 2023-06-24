@@ -7,9 +7,9 @@ const db = new sqlite.Database('database.db', (err) => {
     if (err) throw err;
 });
 
-const username = "Orazio";
-const email = "orazio@rome.it";
-const password = "LeOdi";
+const username = "Giovenale";
+const email = "giovenale@rome.it";
+const password = "LeSatire";
 const admin = false;
 
 const sql = "INSERT INTO users(username, email, password, salt, admin) VALUES(?, ?, ?, ?, ?);";
