@@ -59,7 +59,7 @@ function PageEditorForm(props) {
                         <Container fluid className="d-flex flex-wrap">
                             <Row className="w-100" id="titleForm">
                                 <div className="w-100">
-                                    <Form>
+                                    <Form onSubmit={(event) => event.preventDefault()}>
                                         <div className="d-flex justify-content-center align-items-center" id="title-tile">
                                             Title:<Form.Control type="text" required placeholder="Lorem Ipsum" value={title}
                                                 onChange={(event) => setTitle(event.target.value)}></Form.Control><br />

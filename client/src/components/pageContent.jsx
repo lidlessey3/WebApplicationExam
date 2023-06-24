@@ -27,7 +27,7 @@ function ContentHeatherEditor(props) {
                     </Button>: <></>}
                     <h4>Header</h4>
                 </div>
-                <Form className='margin-top-05rem'>
+                <Form className='margin-top-05rem' onSubmit={(event) => event.preventDefault()}>
                     <Form.Control type='text' value={props.data.elementData} onChange={(event) => {
                         let newElement = {};
                         newElement.elementType = props.data.elementType;
@@ -94,7 +94,7 @@ function ContentImageEditor(props) {
                     <h4>Image</h4>
                 </div>
                 <img src={images[props.data.elementData]} className='content-image margin-top-05rem'></img>
-                <Form className='margin-top-05rem'>
+                <Form className='margin-top-05rem' onSubmit={(event) => event.preventDefault()}>
                     <Form.Select value={props.data.elementData} onChange={(event) => {
                         let newElement = {};
                         newElement.elementType = props.data.elementType;
