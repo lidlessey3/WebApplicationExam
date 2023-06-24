@@ -121,15 +121,14 @@ returns a list of all published pages with the following info:
 ```
 */
 app.get('/api/pages', (req, res) => {
-    let elaborate = async (value) => {
+    let elaborate = (value) => {
         console.log(value);
         res.status(200).json(value.map((elem) => {
             let result = {
                 title: elem.title,
-                author: { id: elem.authorID, name: elem.username }, publicationDate: elem.publicationDate, id: elem.id
+                author: { id: elem.authorID, name: elem.username }, publicationDate: elem.PublicationDate === null ? undefined : elem.PublicationDate, id: elem.id,
+                creationDate: elem.creationDate
             }
-            if (elem.creationDate !== undefined)
-                result.creationDate = elem.creationDate;
             return result;
         }));
     };
@@ -157,16 +156,18 @@ Return format:
 }
 ```
 */
-app.get('/api/pages/:id', async (req, res, next) => {
+app.get('/api/pages/:id', (req, res, next) => {
     // first check if the page is published and if it is not check if the user is logged in
     // if he isn't return an error
-    let page = await db.getPageByID(req.params.id);
-
-    if (dayjs().isBefore(dayjs(page.publicationDate)) && !req.isAuthenticated())
-        res.status(401).json({ error: "You must be logged in to access this resource." });
-    else
-        res.status(200).json((await db.getPageContent(req.params.id)).map((elem) => { elementType: elem.type; elementData: elem.CONTENT }));
-})
+    db.getPageByID(req.params.id).then((page) => {
+        if ((page.publicationDate === null || dayjs().isBefore(dayjs(page.publicationDate), 'day')) && !req.isAuthenticated())
+            res.status(401).json({ error: "You must be logged in to access this resource." });
+        else
+            db.getPageContent(page.id).then((result) => {
+                res.status(200).json(result.map((item) => ({ elementType: item.type, elementData: item.CONTENT })));
+            });
+    });
+});
 /*
 ### POST
 if the user is logged in and can apply changes the page is updated
@@ -189,7 +190,33 @@ Post format:
     }
 }
 ```
+*/
+app.put('/api/pages/:id', checkLoggedIn, (req, res, next) => {
+    db.getPageByID(req.params.id).then((OriginalPage) => {
+        if ((req.user.id !== OriginalPage.author || OriginalPage.author !== req.body.author) && req.user.admin === 0) {
+            return res.status(403).json({ error: 'You do cannot edit another user page' });
+        }
+        let page = { ...req.body };
+        if (page.publicationDate)
+            page.publicationDate = dayjs(page.publicationDate);
+        else if (page.title === undefined || page.title === '')
+            return res.status(400).json({ error: 'The title field cannot be empty.' });
+        else if (page.publicationDate && page.publicationDate.isBefore(dayjs(OriginalPage.creationDate), 'day'))
+            return res.status(400).json({ error: 'The publication date cannot be before its creation.' });
+        page.content = page.content.filter((elem) => elem.elementData !== '' && (elem.elementType === 'header' || elem.elementType === 'text' || elem.elementType === 'image'));
+        let numHeader = page.content.filter((elem) => (elem.elementType === 'header')).length;
+        if (numHeader === 0 || page.content.length === numHeader)
+            return res.status(400).json({ error: 'The page must contain at least one header and one among image or text.' });
+        
+        db.updatePage({ title: page.title, author: page.author, publicationDate: page.publicationDate, id: OriginalPage.id },
+            page.content.map((elem) => ({ type: elem.elementType, CONTENT: elem.elementData })))
+            .then((result) => res.status(200).json(result), (err) => res.status(500).json(err));
 
+    }).catch((err) => {
+        res.status(404).json({ error: 'Page not found' })
+    });
+});
+/*
 ### DELETE
 if the user has permission delete the page
 
@@ -233,7 +260,7 @@ app.post('/api/pages/new', checkLoggedIn, (req, res) => {
             return res.status(400).json({ error: 'The page must contain at least one header and one among image or text.' });
 
         db.newPage({ title: page.title, author: page.author, publicationDate: page.publicationDate },
-            page.content.map((elem) => ({ type: elem.elementType, CONTENT: elem.elementData }))).then((result) => res.status(200).json(result))
+            page.content.map((elem) => ({ type: elem.elementType, CONTENT: elem.elementData }))).then((result) => res.status(200).json({ id: result.id }))
             .catch((err) => res.status(500).json(err));
     })
 });

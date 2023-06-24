@@ -20,3 +20,9 @@ DELETE http://localhost:4452/api/session/current HTTP/1.1
 
 ### Check that only admin can access the list of users
 GET http://localhost:4452/api/users/list HTTP/1.1
+
+### Check the pages that I receive
+GET http://localhost:4452/api/pages HTTP/1.1
+
+### check That I can get the content of a page
+GET http://localhost:4452/api/pages/11 HTTP/1.1

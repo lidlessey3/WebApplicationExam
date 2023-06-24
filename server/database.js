@@ -79,15 +79,17 @@ exports.getPageByID = function getPageByID(id) {
         db.get(sql, [id], (err, row) => {
             if (err)
                 reject(err);
-            else
+            else if (row)
                 resolve(row);
+            else
+                reject('Not found');
         });
     });
 }
 
 exports.getPageContent = function getPageContent(id) { // returns the content of a page given its id sorted in ascending order
     return new Promise((resolve, reject) => {
-        const sql = "SELECT * FROM pagescontent WHERE page = ?;";
+        const sql = "SELECT * FROM pagescontent, pages, users WHERE page = ? AND pages.id = page AND author = users.id;";
         db.all(sql, [id], (err, rows) => {
             if (err)
                 reject(err);
@@ -99,7 +101,7 @@ exports.getPageContent = function getPageContent(id) { // returns the content of
 
 exports.getPublishedPages = function getPublishedPages() {
     return new Promise((resolve, reject) => {
-        const sql = "SELECT pages.id, publicationDate, title, username, users.id AS authorID FROM pages, users WHERE pages.author = users.id AND publicationDate <= ?;";
+        const sql = "SELECT pages.id, publicationDate, title, username FROM pages, users WHERE pages.author = users.id AND publicationDate <= ?;";
         db.all(sql, [dayjs().toISOString()], (err, rows) => {
             if (err)
                 reject(err);
@@ -111,7 +113,7 @@ exports.getPublishedPages = function getPublishedPages() {
 
 exports.getAllPages = function getAllPages() {
     return new Promise((resolve, reject) => {
-        const sql = "SELECT pages.id, publicationDate, title, creationDate, username, users.id FROM pages, users WHERE users.id = pages.author;";
+        const sql = "SELECT pages.id, publicationDate, title, creationDate, username, users.id AS authorID FROM pages, users WHERE users.id = pages.author;";
         db.all(sql, [], (err, rows) => {
             if (err)
                 reject(err);
@@ -133,23 +135,38 @@ exports.deletePage = function deletePage(id) {
     })
 }
 
-exports.updatePage = async function updatePage(page, content) {
+exports.updatePage = function updatePage(page, content) {
     const sqlPage = "UPDATE pages SET author = ?, publicationDate = ?, title = ? WHERE id = ?;";
     const sqlNewContent = "INSERT INTO pagescontent(page, position, type, CONTENT) VALUES(?, ?, ?, ?);";
     const sqlRemoveContent = "DELETE FROM pagescontent WHERE page = ?;";
-    db.run(sqlPage, [page.author, page.publicationDate.toISOString(), page.title, page.id]);
-    db.run(sqlRemoveContent, [page.id], (result, err) => {
-        if (err) {
-            throw err;
-        }
-        else
-            content.forEach(element => {
-                db.run(sqlNewContent, [page.id, element.position, element.type, element.CONTENT]);
-            });
+    return new Promise((resolve, reject) => {
+        db.run(sqlPage, [page.author, page.publicationDate.toISOString(), page.title, page.id], (result, err) => {
+            if (err)
+                reject(err);
+            else
+                db.run(sqlRemoveContent, [page.id], (result, err) => {
+                    if (err) {
+                        reject(err);
+                    }
+                    else
+                        Promise.all(content.map(element => {
+                            return new Promise((resolve, reject) => db.run(sqlNewContent, [page.id, element.position, element.type, element.CONTENT], (result, err) => {
+                                if (err)
+                                    reject(err);
+                                else
+                                    resolve(result);
+                            }));
+                        })).then((result) => {
+                            resolve(result);
+                        }).catch((err) => {
+                            reject(err);
+                        });
+                });
+        });
     });
 }
 
-exports.newPage = async function newPage(page, content) {
+exports.newPage = function newPage(page, content) {
     const sqlPage = "INSERT INTO pages(author, publicationDate, creationDate, title) VALUES(?, ?, ?, ?);";
     const sqlNewContent = "INSERT INTO pagescontent(page, position, type, CONTENT) VALUES(?, ?, ?, ?);";
     const now = dayjs();
