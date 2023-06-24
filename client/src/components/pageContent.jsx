@@ -7,7 +7,9 @@ import parthenon from './../assets/Parthenon.jpg';
 const images = [thinker, disk, colosseum, parthenon];
 
 function ContentHeather(props) {
-
+    return (<div className='w-100 d-flex justify-content-start'>
+        <h3>{props.data.elementData}</h3>
+    </div>);
 }
 
 function ContentHeatherEditor(props) {
@@ -39,7 +41,9 @@ function ContentHeatherEditor(props) {
 }
 
 function ContentText(props) {
-
+    return (<div className='w-100 d-flex justify-content-start'>
+        <p>{props.data.elementData}</p>
+    </div>);
 }
 
 function ContentTextEditor(props) {
@@ -69,7 +73,9 @@ function ContentTextEditor(props) {
 }
 
 function ContentImage(props) {
-
+    return (<div className='w-100'>
+        <img src={images[props.data.elementData]} className='content-image'></img>
+    </div>);
 }
 
 function ContentImageEditor(props) {
@@ -106,5 +112,5 @@ function ContentImageEditor(props) {
     );
 }
 
-export { ContentTextEditor, ContentImageEditor, ContentHeatherEditor };
+export { ContentTextEditor, ContentImageEditor, ContentHeatherEditor, ContentHeather, ContentText, ContentImage };
 

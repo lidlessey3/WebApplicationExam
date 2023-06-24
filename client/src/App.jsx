@@ -60,7 +60,7 @@ function App() {
             <Route element={<><PageEditorForm user={user} pages={pages} setPages={setPages} /></>} path='/page/:id/edit'>
 
             </Route>
-            <Route element={<><PageDisplay /></>} path='/page/:id'>
+            <Route element={<><PageDisplay user={user} pages={pages} /></>} path='/page/:id'>
             </Route>
             <Route element={<><PageEditorForm user={user} pages={pages} setPages={setPages} /></>} path='/page/new'>
 
