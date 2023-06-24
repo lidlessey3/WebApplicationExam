@@ -1,4 +1,4 @@
-import { Table } from "react-bootstrap";
+import { Table, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import 'bootstrap-icons/font/bootstrap-icons.css'
 import './../style/userMenu.css'
@@ -12,6 +12,11 @@ function UserMenu(props) {
             </Link>
             <Table>
                 <tbody>
+                    <tr>
+                        <td>Title</td>
+                        <td>Author</td>
+                        <td>Creation Date</td>
+                    </tr>
                     {props.pages.map((page) => <UnpublishedRow key={page.id} page={page} user={props.user}></UnpublishedRow>)}
                 </tbody>
             </Table>
@@ -32,9 +37,14 @@ function UnpublishedRow(props) {
                 <td>
                     <p className="text-secondary">{props.page.creationDate.format("DD/MM/YYYY")}</p>
                 </td>
-                {(props.user.id === props.page.author.id || props.user.admin === 1) ? <td>
-                    <Link to={'/page/' + props.page.id + '/edit'}><div className="card outline-secondary"><i className="bi bi-pencil-fill"></i></div></Link>
-                </td> : <></>}
+                {(props.user.id === props.page.author.id || props.user.admin === 1) ? <>
+                    <td>
+                        <Link to={'/page/' + props.page.id + '/edit'}><div className="card outline-secondary"><i className="bi bi-pencil-fill"></i></div></Link>
+                    </td>
+                    <td>
+                        <Button variant="outline-danger" onClick={() => { }}><i className="bi bi-trash3-fill"></i></Button>
+                    </td>
+                </> : <></>}
             </tr>
         </>
     );

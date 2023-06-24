@@ -28,10 +28,10 @@ function PageDisplay(props) {
                         navigate(-1);
                     }}></i>
                     {props.user ? (props.user.admin || props.user.id === page.author.id) ? <>
-                        <div className="outline-info card">
+                        <div className="outline-info card text-light margin-top-05rem">
                             <Link to='edit'><i className="bi bi-pencil-fill"></i></Link>
                         </div>
-                        <Button variant='outline-danger' onClick={() => {
+                        <Button variant='outline-danger' className="margin-top-05rem" onClick={() => {
 
                         }}><i className="bi bi-trash3-fill"></i></Button>
                     </> : <></> : <></>}
