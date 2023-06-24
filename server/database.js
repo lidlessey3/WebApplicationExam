@@ -126,11 +126,17 @@ exports.getAllPages = function getAllPages() {
 exports.deletePage = function deletePage(id) {
     return new Promise((resolve, reject) => {
         const sql = "DELETE FROM pages WHERE id = ?;";
+        const sqlRemoveContent = "DELETE FROM pagescontent WHERE page = ?;";
         db.run(sql, [id], (err) => {
             if (err)
                 reject(err);
             else
-                resolve(true);
+                db.run(sqlRemoveContent, [id], (err) => {
+                    if (err)
+                        reject(err);
+                    else
+                        resolve(true);
+                })
         });
     })
 }
