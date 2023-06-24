@@ -81,7 +81,7 @@ app.post('/api/session', function (req, res, next) {
     })(req, res, next);
 });
 
-app.get('/api/session/current', (req, res, next) => {
+app.get('/api/session/current', checkLoggedIn,(req, res, next) => {
     res.json(req.user);
 });
 /*
@@ -90,7 +90,7 @@ app.get('/api/session/current', (req, res, next) => {
 
 removes the session cookie
 */
-app.delete('/api/session/current', (req, res) => {
+app.delete('/api/session/current', checkLoggedIn,(req, res) => {
     req.logout(() => {
         res.end();
     });
