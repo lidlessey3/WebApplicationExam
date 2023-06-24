@@ -300,5 +300,11 @@ app.get("/api/site/name", (req, res) => {
     });
 });
 
+app.put('/api/site/name', checkLoggedIn, (req, res) => {
+    if (req.user.admin != 1)
+        return res.status(403).json({ error: 'you need to be authenticated to perform this action' });
+    db.updateSetting('websiteName', req.body.value).then((result) => res.status(200).json({ ok: true })).catch((err) => res.status(500).json({ error: err }));
+})
+
 app.listen(4452);
 console.log("Listening on port 4452");

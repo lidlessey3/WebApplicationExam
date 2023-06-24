@@ -5,6 +5,7 @@ import PageList from './components/pageList';
 import LoginForm from './components/loginForm';
 import PageEditorForm from './components/pageEditorForm';
 import PageDisplay from './components/pageDisplay';
+import AdminPanel from './components/adminPanel';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import NotFoundPage from './components/404';
@@ -63,6 +64,9 @@ function App() {
             <Route element={<><PageDisplay user={user} pages={pages} setPages={setPages} /></>} path='/page/:id'>
             </Route>
             <Route element={<><PageEditorForm user={user} pages={pages} setPages={setPages} /></>} path='/page/new'>
+
+            </Route>
+            <Route element={<><AdminPanel websiteName={websiteName} setWebsiteName={updateWebsiteName}></AdminPanel></>} path='/admin'>
 
             </Route>
             <Route element={<><NotFoundPage /></>} path='*'>

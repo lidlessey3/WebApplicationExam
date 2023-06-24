@@ -204,7 +204,16 @@ exports.getSetting = function getSetting(setting) {
     });
 }
 
-exports.updateSetting = async function updateSetting(setting, value) {
+exports.updateSetting = function updateSetting(setting, value) {
     const sql = "UPDATE settings SET value = ? WHERE setting = ?;";
-    db.run(sql, [value, setting]);
+    return new Promise((resolve, reject) => {
+        db.run(sql, [value, setting], function (err) {
+            if (err)
+                reject(err);
+            else if (this.changes === 0)
+                reject('Not found');
+            else
+                resolve(true);
+        });
+    });
 }
