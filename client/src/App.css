@@ -31,3 +31,7 @@
   max-width: 400px;
   max-height: 500px;
 }
+
+.padding-05rem {
+  padding: 0.5rem;
+}

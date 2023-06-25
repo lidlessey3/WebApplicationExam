@@ -16,19 +16,21 @@ function TopBar(props) {
                 </Navbar.Brand>
                 <Nav id="userDetails">
                     {props.user === undefined ? <Nav.Item><Link to='/login'>
-                        <i className='icon-size text-light'>Log In</i>
+                        <div className='card border-light bg-info padding-05rem'>
+                            <i className='icon-size text-light'>Log In</i>
+                        </div>
                     </Link></Nav.Item> : <>
-                        <Nav.Item className='margin-right-02rem'><i className='icon-size text-light'>{props.user.name}</i></Nav.Item>
+                        <Nav.Item className='margin-right-02rem'><div className='card border-light bg-info padding-05rem'><i className='icon-size text-light'>{props.user.name}</i></div></Nav.Item>
                         <Nav.Item className='margin-right-02rem'><Button variant='outline-light' onClick={(event) => {
-                                logout()
-                                    .then((result) => {
-                                        props.updateUser(undefined);
-                                        navigate('/');
-                                    });
+                            logout()
+                                .then((result) => {
+                                    props.updateUser(undefined);
+                                    navigate('/');
+                                });
                         }}>Log Out</Button></Nav.Item>
-                        {props.user.admin === 1 ? <Nav.Item>
+                        {props.user.admin === 1 ? <Nav.Item><div className='card border-light bg-info padding-05rem'>
                             <Link to='/admin' className='text-light'>Admin Options</Link>
-                        </Nav.Item> : <></>}
+                        </div></Nav.Item> : <></>}
                     </>}
                 </Nav>
             </Navbar>
