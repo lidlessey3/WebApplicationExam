@@ -179,8 +179,10 @@
 (only _main_ components, minor ones may be skipped)
 
 ## Screenshot
-
-![Screenshot](./img/screenshot.jpg)
+### List of pages
+![Screenshot](./images/list%20of%20pages.png)
+### Creation of a page
+![Screenshot](./images/creation%20of%20pages.png)
 
 ## Users Credentials
 
