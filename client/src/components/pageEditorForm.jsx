@@ -74,7 +74,6 @@ function PageEditorForm(props) {
                     <Col md={2} id="pageSettings">
                         <Form>
                             <div className="d-flex justify-content-beginning align-items-center margin-top-05rem">
-                                {console.log(author)}
                                 Author: {props.user.admin === 1 ? <Form.Select className="w-auto" value={JSON.stringify(author)} onChange={(event) => {
                                     setAuthor(JSON.parse(event.target.value));
                                 }}>
@@ -187,7 +186,6 @@ function PageSave(props) {
                             if (response.error)
                                 props.setErrors([...errors, response.error]);
                             else {
-                                console.log('Response: ', response);
                                 props.navigate(-1);
                                 let newPages = Array(...props.pages);
                                 newPages.push({
@@ -225,7 +223,6 @@ function PageSave(props) {
 }
 
 function SaveError(props) {
-    console.log(props.errors);
     return (
         <>
             <Collapse in={props.errors.length !== 0}>

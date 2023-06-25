@@ -34,7 +34,6 @@ function PageDisplay(props) {
                         </div>
                         <Button variant='outline-danger' className="margin-top-05rem" onClick={() => {
                             deletePage(id).then((result) => {
-                                    console.log(result);
                                     if (!result.error) {
                                         let newPages = [];
                                         for (let i = 0; i < props.pages.length; i++) {
@@ -45,7 +44,7 @@ function PageDisplay(props) {
                                         navigate(-1);
                                     }
                                     else
-                                        console.log('AAAAAa', result.error);
+                                        console.log(result.error);
                                 });
                         }}><i className="bi bi-trash3-fill"></i></Button>
                     </> : <></> : <></>}

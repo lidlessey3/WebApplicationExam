@@ -48,8 +48,6 @@ function PageTable(props) {
                                 if (page.id !== props.allPages[i].id)
                                     newPages.push(props.allPages[i]);
                             }
-                            console.log(props.allPages);
-                            console.log(newPages);
                             props.setPages(newPages);
                         };
                         return (<PageRow page={page} user={props.user} key={page.id} remove={remove} />);
@@ -81,11 +79,10 @@ function PageRow(props) {
                         <Button variant="outline-danger" onClick={() => {
                             deletePage(props.page.id)
                                 .then((result) => {
-                                    console.log(result);
                                     if (!result.error)
                                         props.remove();
                                     else
-                                        console.log('AAAAAa', result.error);
+                                        console.log(result.error);
                                 });
                         }}><i className="bi bi-trash3-fill"></i></Button>
                     </td>

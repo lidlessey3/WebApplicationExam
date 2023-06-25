@@ -16,7 +16,6 @@ function AdminPanel(props) {
                     setWebsiteName(siteName).then((json) => {
                         if (json.error === undefined) {
                             props.setWebsiteName(siteName);
-                            console.log(json);
                             navigate('/');
                         }
                         else {

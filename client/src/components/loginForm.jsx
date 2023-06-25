@@ -16,11 +16,9 @@ function LoginForm(props) {
             <Row className="w-100 justify-content-center align-items-center">
                 <div className="card bg-light" id="loginForm" onSubmit={(event) => {
                     event.preventDefault();
-                    console.log("Sending login request");
                     login(email, password).then((json) => {
                         if (json.error === undefined) {
                             props.updateUser(json);
-                            console.log(json);
                             navigate('/');
                         }
                         else {

@@ -145,7 +145,6 @@ exports.updatePage = function updatePage(page, content) {
     const sqlPage = "UPDATE pages SET author = ?, publicationDate = ?, title = ? WHERE id = ?;";
     const sqlNewContent = "INSERT INTO pagescontent(page, position, type, CONTENT) VALUES(?, ?, ?, ?);";
     const sqlRemoveContent = "DELETE FROM pagescontent WHERE page = ?;";
-    console.log(page, content);
     return new Promise((resolve, reject) => {
         db.run(sqlPage, [page.author, page.publicationDate ? page.publicationDate.toISOString() : undefined, page.title, page.id], (err) => {
             if (err)
@@ -179,7 +178,6 @@ exports.newPage = function newPage(page, content) {
     const now = dayjs();
     return new Promise((resolve, reject) => {
         db.run(sqlPage, [page.author, page.publicationDate ? page.publicationDate.toISOString() : undefined, now.toISOString(), page.title], function (err) {
-            console.log(this.lastID);
             if (err) {
                 reject(err);
                 return;

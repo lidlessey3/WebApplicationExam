@@ -21,7 +21,6 @@ function App() {
   useEffect(() => {
     getPagesList().then((json) => {
       setPages(json.map((elem) => {
-        console.log(elem);
         return {
           id: elem.id, publicationDate: elem.publicationDate ? dayjs(elem.publicationDate) : undefined,
           creationDate: elem.creationDate ? dayjs(elem.creationDate) : undefined, title: elem.title, author: { id: elem.author.id, name: elem.author.name }
@@ -39,8 +38,9 @@ function App() {
 
   useEffect(() => {
     getCurrentUser().then((answer) => {
-      if (answer.error !== undefined && answer !== user)
+      if (answer.error === undefined && answer !== user) {
         changeUser(answer);
+      }
     }, (err) => changeUser(undefined));
   }, []);
 

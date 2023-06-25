@@ -58,11 +58,10 @@ function UnpublishedRow(props) {
                         <Button variant="outline-danger" onClick={() => { 
                              deletePage(props.page.id)
                              .then((result) => {
-                                 console.log(result);
                                  if (!result.error)
                                      props.remove();
                                  else
-                                     console.log('AAAAAa', result.error);
+                                     console.log(result.error);
                              });
                          }}><i className="bi bi-trash3-fill"></i></Button>
                     </td>

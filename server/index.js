@@ -158,7 +158,6 @@ app.get('/api/pages/:id', (req, res, next) => {
             res.status(401).json({ error: "You must be logged in to access this resource." });
         else
             db.getPageContent(page.id).then((result) => {
-                console.log(result);
                 res.status(200).json(result.map((item) => ({ elementType: item.type, elementData: item.CONTENT })));
             });
     });
@@ -206,7 +205,6 @@ app.put('/api/pages/:id', checkLoggedIn, (req, res, next) => {
         db.updatePage({ title: page.title, author: page.author, publicationDate: page.publicationDate, id: OriginalPage.id },
             page.content.map((elem) => ({ type: elem.elementType, CONTENT: elem.elementData })))
             .then((result) => res.status(200).json(result), (err) => {
-                console.log(err);
                 res.status(500).json(err);
             });
 
@@ -220,7 +218,6 @@ if the user has permission delete the page*/
 
 app.delete('/api/pages/:id', checkLoggedIn, (req, res) => {
     db.getPageByID(req.params.id).then((page) => {
-        console.log(req.user);
         if (req.user.id != page.author && req.user.admin === 0)
             return res.status(403).json({ error: "You cannot delete another user's page." });
         db.deletePage(req.params.id).then((result) => res.status(200).json({ok: true})).catch((err) => res.status(500).json({ error: err }));
