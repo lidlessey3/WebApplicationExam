@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Form, Button, Row, Collapse } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import { login } from "../utils/API";
 import "./../style/loginForm.css"
 
 function LoginForm(props) {
@@ -16,12 +17,7 @@ function LoginForm(props) {
                 <div className="card bg-light" id="loginForm" onSubmit={(event) => {
                     event.preventDefault();
                     console.log("Sending login request");
-                    fetch('http://localhost:4452/api/session', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        credentials: 'include',
-                        body: JSON.stringify({ username: email, password: password }),
-                    }).then((response) => response.json()).then((json) => {
+                    login(email, password).then((json) => {
                         if (json.error === undefined) {
                             props.updateUser(json);
                             console.log(json);

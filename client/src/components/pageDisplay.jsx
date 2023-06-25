@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { Row, Col, Container, Button } from 'react-bootstrap';
 import { ContentHeather, ContentImage, ContentText } from "./pageContent";
+import { getPagesContent, deletePage } from "../utils/API";
 
 function PageDisplay(props) {
     const { id } = useParams();
@@ -10,7 +11,7 @@ function PageDisplay(props) {
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetch('http://localhost:4452/api/pages/' + id, { credentials: 'include' }).then((response) => response.json()).then((response) => {
+        getPagesContent(id).then((response) => {
             if (response.error) {
                 setErrors([response.error]);
                 return;
@@ -32,8 +33,7 @@ function PageDisplay(props) {
                             <Link to='edit'><i className="bi bi-pencil-fill"></i></Link>
                         </div>
                         <Button variant='outline-danger' className="margin-top-05rem" onClick={() => {
-                            fetch('http://localhost:4452/api/pages/' + id, { method: 'DELETE', credentials: 'include' }).then((result) => result.json())
-                                .then((result) => {
+                            deletePage(id).then((result) => {
                                     console.log(result);
                                     if (!result.error) {
                                         let newPages = [];

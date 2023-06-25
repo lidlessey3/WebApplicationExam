@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import 'bootstrap-icons/font/bootstrap-icons.css'
 import './../style/userMenu.css'
 import dayjs from 'dayjs';
+import { deletePage } from "../utils/API";
 
 function UserMenu(props) {
     return (
@@ -55,7 +56,7 @@ function UnpublishedRow(props) {
                     </td>
                     <td>
                         <Button variant="outline-danger" onClick={() => { 
-                             fetch('http://localhost:4452/api/pages/' + props.page.id, { method: 'DELETE', credentials: 'include' }).then((result) => result.json())
+                             deletePage(props.page.id)
                              .then((result) => {
                                  console.log(result);
                                  if (!result.error)

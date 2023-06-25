@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import './../style/pageEditorForm.css'
 import dayjs from 'dayjs';
 import { ContentHeatherEditor, ContentImageEditor, ContentTextEditor } from "./pageContent";
-
+import { getUserList, getPagesContent, createPage, editPage } from "../utils/API";
 
 function PageEditorForm(props) {
     const [title, setTitle] = useState('');
@@ -21,11 +21,12 @@ function PageEditorForm(props) {
             navigate('/');
             return;
         }
-        setAuthor({ name: props.user.name, id: props.user.id });
+        if (!id)
+            setAuthor({ name: props.user.name, id: props.user.id });
         if (props.user.admin !== 1)
             return;
         else
-            fetch("http://localhost:4452/api/users/list", { credentials: "include" }).then((response) => response.json()).then((response) => {
+            getUserList().then((response) => {
                 setUsers(response);
             });
     }, [props.user]);
@@ -33,14 +34,14 @@ function PageEditorForm(props) {
     useEffect(() => {
         if (!id)
             return;
-        fetch('http://localhost:4452/api/pages/' + id, { credentials: 'include' }).then((response) => response.json()).then((response) => {
+        getPagesContent(id).then((response) => {
             if (response.error) {
                 setErrors([response.error]);
                 return;
             }
             setComponents(response);
             let page = props.pages.find((elem) => elem.id == id);
-            setAuthor(page.author);
+            setAuthor({ name: page.author.name, id: page.author.id });
             setPublicationDate(page.publicationDate ? dayjs(page.publicationDate) : undefined);
             setTitle(page.title);
         });
@@ -73,6 +74,7 @@ function PageEditorForm(props) {
                     <Col md={2} id="pageSettings">
                         <Form>
                             <div className="d-flex justify-content-beginning align-items-center margin-top-05rem">
+                                {console.log(author)}
                                 Author: {props.user.admin === 1 ? <Form.Select className="w-auto" value={JSON.stringify(author)} onChange={(event) => {
                                     setAuthor(JSON.parse(event.target.value));
                                 }}>
@@ -180,64 +182,42 @@ function PageSave(props) {
 
             if (errors.length === 0)
                 if (!props.id)
-                    fetch('http://localhost:4452/api/pages/new', {
-                        credentials: 'include',
-                        method: 'post',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            title: props.title, author: props.author.id,
-                            publicationDate: props.publicationDate ? props.publicationDate.toISOString() : undefined, content: actualComponents
-                        })
-                    }).then(response => {
-                        if (!response.ok)
-                            errors.push(response.status);
-                        return response.json()
-                    }).then((response) => {
-                        if (response.error)
-                            props.setErrors([...errors, response.error]);
-                        else {
-                            console.log('Response: ', response);
-                            props.navigate(-1);
-                            let newPages = Array(...props.pages);
-                            newPages.push({
-                                id: response.id, title: props.title, author: props.author,
-                                publicationDate: props.publicationDate ? props.publicationDate : undefined, creationDate: dayjs()
-                            });
-                            props.setPages(newPages);
-                        }
-                    });
+                    createPage(props.title, props.author.id, props.publicationDate ? props.publicationDate.toISOString() : undefined, actualComponents)
+                        .then((response) => {
+                            if (response.error)
+                                props.setErrors([...errors, response.error]);
+                            else {
+                                console.log('Response: ', response);
+                                props.navigate(-1);
+                                let newPages = Array(...props.pages);
+                                newPages.push({
+                                    id: response.id, title: props.title, author: props.author,
+                                    publicationDate: props.publicationDate ? props.publicationDate : undefined, creationDate: dayjs()
+                                });
+                                props.setPages(newPages);
+                            }
+                        });
                 else
-                    fetch('http://localhost:4452/api/pages/' + props.id, {
-                        credentials: 'include',
-                        method: 'put',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            title: props.title, author: props.author.id,
-                            publicationDate: props.publicationDate ? props.publicationDate.toISOString() : undefined, content: actualComponents
-                        })
-                    }).then(response => {
-                        if (!response.ok)
-                            errors.push(response.status);
-                        return response.json()
-                    }).then((response) => {
-                        if (response.error)
-                            props.setErrors([...errors, response.error]);
-                        else {
-                            props.navigate(-1);
-                            let newPages = Array(...props.pages);
-                            newPages = newPages.map((elem) => {
-                                if (elem.id != props.id)
-                                    return elem;
-                                else
-                                    return ({
-                                        id: elem.id, title: props.title, author: props.author,
-                                        publicationDate: props.publicationDate ? props.publicationDate : undefined,
-                                        creationDate: elem.creationDate
-                                    });
-                            });
-                            props.setPages(newPages);
-                        }
-                    });
+                    editPage(props.id, props.title, props.author.id, props.publicationDate ? props.publicationDate.toISOString() : undefined, actualComponents)
+                        .then((response) => {
+                            if (response.error)
+                                props.setErrors([...errors, response.error]);
+                            else {
+                                props.navigate(-1);
+                                let newPages = Array(...props.pages);
+                                newPages = newPages.map((elem) => {
+                                    if (elem.id != props.id)
+                                        return elem;
+                                    else
+                                        return ({
+                                            id: elem.id, title: props.title, author: props.author,
+                                            publicationDate: props.publicationDate ? props.publicationDate : undefined,
+                                            creationDate: elem.creationDate
+                                        });
+                                });
+                                props.setPages(newPages);
+                            }
+                        });
             else
                 props.setErrors(errors);
         }} className="w-100 margin-top-05rem"><i className="bi bi-check2-circle">Save</i></Button>

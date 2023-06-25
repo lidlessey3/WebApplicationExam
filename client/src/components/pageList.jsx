@@ -2,6 +2,7 @@ import { Row, Col, Table, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import dayjs from 'dayjs';
 import UserMenu from "./userMenu";
+import { deletePage } from "../utils/API";
 import './../style/pageList.css';
 
 function PageList(props) {
@@ -78,7 +79,7 @@ function PageRow(props) {
                     </td>
                     <td>
                         <Button variant="outline-danger" onClick={() => {
-                            fetch('http://localhost:4452/api/pages/' + props.page.id, { method: 'DELETE', credentials: 'include' }).then((result) => result.json())
+                            deletePage(props.page.id)
                                 .then((result) => {
                                     console.log(result);
                                     if (!result.error)

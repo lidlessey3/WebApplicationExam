@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { Row, Collapse, Form, Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import { setWebsiteName } from "../utils/API";
 
 function AdminPanel(props) {
     const [siteName, setSiteName] = useState(props.websiteName);
-    const [error, setError] = useState();
+    const [error, setError] = useState('');
     const navigate = useNavigate();
 
     return (
@@ -12,13 +13,7 @@ function AdminPanel(props) {
             <Row className="w-100 justify-content-center align-items-center">
                 <div className="card bg-light" id="loginForm" onSubmit={(event) => {
                     event.preventDefault();
-                    console.log("Sending login request");
-                    fetch('http://localhost:4452/api/site/name', {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
-                        credentials: 'include',
-                        body: JSON.stringify({ value: siteName }),
-                    }).then((response) => response.json()).then((json) => {
+                    setWebsiteName(siteName).then((json) => {
                         if (json.error === undefined) {
                             props.setWebsiteName(siteName);
                             console.log(json);

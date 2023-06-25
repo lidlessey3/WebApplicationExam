@@ -1,7 +1,9 @@
 import { Navbar, Nav, Button } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { logout } from '../utils/API';
 
 function TopBar(props) {
+    const navigate = useNavigate();
     return (
         <>
             <Navbar bg="info" expand="sm" variant='dark' fixed='top' className='navbar-padding'>
@@ -18,7 +20,11 @@ function TopBar(props) {
                     </Link></Nav.Item> : <>
                         <Nav.Item className='margin-right-02rem'><i className='icon-size text-light'>{props.user.name}</i></Nav.Item>
                         <Nav.Item className='margin-right-02rem'><Button variant='outline-light' onClick={(event) => {
-                            fetch('http://localhost:4452/api/session/current', { method: 'DELETE', credentials: 'include' }).then((result) => props.updateUser(undefined));
+                                logout()
+                                    .then((result) => {
+                                        props.updateUser(undefined);
+                                        navigate('/');
+                                    });
                         }}>Log Out</Button></Nav.Item>
                         {props.user.admin === 1 ? <Nav.Item>
                             <Link to='/admin' className='text-light'>Admin Options</Link>

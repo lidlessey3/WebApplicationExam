@@ -92,7 +92,7 @@ removes the session cookie
 */
 app.delete('/api/session/current', checkLoggedIn,(req, res) => {
     req.logout(() => {
-        res.end();
+        res.status(200).json({ok: true});
     });
 });
 /*

@@ -11,6 +11,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import NotFoundPage from './components/404';
 import { Container } from 'react-bootstrap';
 import dayjs from 'dayjs';
+import { getPagesList, getWebsiteName, getCurrentUser } from './utils/API';
 
 function App() {
   const [user, changeUser] = useState(undefined);
@@ -18,7 +19,7 @@ function App() {
   const [pages, setPages] = useState([]);
 
   useEffect(() => {
-    fetch('http://localhost:4452/api/pages', { credentials: "include" }).then((result) => result.json()).then((json) => {
+    getPagesList().then((json) => {
       setPages(json.map((elem) => {
         console.log(elem);
         return {
@@ -30,14 +31,14 @@ function App() {
   }, [user]);
 
   useEffect(() => {
-    fetch('http://localhost:4452/api/site/name').then((res) => res.json()).then((res) => updateWebsiteName(res.value));
-    const interval = setTimeout(() => fetch('http://localhost:4452/api/site/name').then((res) => res.json()).then((res) => updateWebsiteName(res.value)), 60 * 1000);
+    getWebsiteName().then((res) => updateWebsiteName(res.value));
+    const interval = setTimeout(() => getWebsiteName().then((res) => updateWebsiteName(res.value)), 60 * 1000);
 
     return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
-    fetch('http://localhost:4452/api/session/current', { credentials: "include" }).then((answer) => answer.json()).then((answer) => {
+    getCurrentUser().then((answer) => {
       if (answer.error !== undefined && answer !== user)
         changeUser(answer);
     }, (err) => changeUser(undefined));
